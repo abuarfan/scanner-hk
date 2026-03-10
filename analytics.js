@@ -20,7 +20,10 @@ function tampilkanStatistik() {
     btn.innerHTML = 'Tutup Analisis';
     wadah.style.display = 'block';
 
-    let batasKKM = parseInt(document.getElementById('inputKKM').value) || 75;
+    // --- SINKRONISASI KKM DAN SISTEM PENILAIAN ---
+    let batasKKM = parseFloat(document.getElementById('inputKKM').value);
+    if (isNaN(batasKKM)) batasKKM = 75; // Fallback aman jika kosong
+
     let jmlLulus = 0; let jmlRemedial = 0; let totalNilai = 0; 
     let nilaiMin = riwayatData[0].nilai; let nilaiMax = riwayatData[0].nilai;
 
@@ -31,7 +34,13 @@ function tampilkanStatistik() {
         if(d.nilai > nilaiMax) nilaiMax = d.nilai;
     });
 
-    let rataRata = (totalNilai / totalSiswa).toFixed(1);
+    // Hilangkan desimal berlebih akibat perhitungan javascript (contoh: 80.0000001 -> 80)
+    let rataRata = parseFloat((totalNilai / totalSiswa).toFixed(2));
+    nilaiMin = parseFloat(nilaiMin.toFixed(2));
+    nilaiMax = parseFloat(nilaiMax.toFixed(2));
+    
+    let persenLulus = Math.round((jmlLulus / totalSiswa) * 100);
+    let persenRemedial = Math.round((jmlRemedial / totalSiswa) * 100);
 
     let htmlStat = `
     <div class="card" style="padding: 15px; margin-bottom: 15px;">
@@ -51,18 +60,17 @@ function tampilkanStatistik() {
             </div>
             <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 40%; text-align: center; border: 1px solid var(--border);">
                 <div style="font-size: 11px; color: var(--text-muted);">Tuntas (≥ ${batasKKM})</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--success);">${jmlLulus} Siswa</div>
+                <div style="font-size: 16px; font-weight: bold; color: var(--success);">${jmlLulus} <span style="font-size:12px; font-weight:normal;">Siswa (${persenLulus}%)</span></div>
             </div>
             <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 40%; text-align: center; border: 1px solid var(--border);">
                 <div style="font-size: 11px; color: var(--text-muted);">Remedial (< ${batasKKM})</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--danger);">${jmlRemedial} Siswa</div>
+                <div style="font-size: 16px; font-weight: bold; color: var(--danger);">${jmlRemedial} <span style="font-size:12px; font-weight:normal;">Siswa (${persenRemedial}%)</span></div>
             </div>
         </div>
     </div>`;
 
     let kunciTokens = typeof parseKunci === 'function' ? parseKunci(document.getElementById('inputKunci').value) : [];
 
-    // 🔥 TABEL SCROLL YANG FIX & KOKOH 🔥
     function genTabelStat(start, end) {
         let t = `<table style="min-width:100px; font-size:12px; border-collapse: collapse; flex:1;">
             <thead>

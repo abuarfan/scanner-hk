@@ -169,9 +169,13 @@ function renderTabelRiwayat() {
     </thead><tbody>`;
 
     let sortedRiwayat = [...riwayatData].sort((a, b) => b.nilai - a.nilai);
+    
+    // 🔥 UBAH parseInt MENJADI parseFloat AGAR SINKRON DENGAN BOBOT/TO 🔥
+    let batasKKM = parseFloat(document.getElementById('inputKKM').value);
+    if(isNaN(batasKKM)) batasKKM = 75;
 
     sortedRiwayat.forEach((data) => {
-        let isLulus = data.nilai >= parseInt(document.getElementById('inputKKM').value || 75);
+        let isLulus = data.nilai >= batasKKM;
         let btnKirim = `<button class="wa-btn" onclick="kirimWA(event, '${data.nama}', ${data.nilai}, ${data.benar}, ${data.salah}, ${isLulus})" title="Kirim WA">💬</button>`;
 
         htmlContent += `

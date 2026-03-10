@@ -263,7 +263,10 @@ function prosesDeteksiKertas(scanMode = 'manual') {
             let kanvasPotongan = document.getElementById('kanvasHasil'); kanvasPotongan.style.display = 'block';
             cv.imshow('kanvasHasil', gambarPotongan);
 
-            let batasKKM = parseInt(document.getElementById('inputKKM').value) || 75;
+            // 🔥 UBAH parseInt MENJADI parseFloat AGAR WARNA NILAI (MERAH/HIJAU) SINKRON 🔥
+            let batasKKM = parseFloat(document.getElementById('inputKKM').value);
+            if (isNaN(batasKKM)) batasKKM = 75;
+            
             let warnaNilai = nilaiAkhir < batasKKM ? 'var(--danger)' : 'var(--success)';
             
             let htmlHasil = `
