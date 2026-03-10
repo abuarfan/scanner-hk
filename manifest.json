@@ -1,0 +1,17 @@
+{
+  "name": "LJK Scanner Pro",
+  "short_name": "LJK Pro",
+  "description": "Aplikasi Scanner Lembar Jawaban Komputer Berbasis AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#E5E7EB",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3067/3067260.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

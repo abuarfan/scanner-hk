@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scanner LJK Pro</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        /* --- CSS APPLE / NOTION MINIMALIST STYLE --- */
+        :root { 
+            --primary: #007AFF; --primary-hover: #0056b3; 
+            --success: #34C759; --danger: #FF3B30; --warning: #FF9500; 
+            
+            --bg-body: #F4F4F7; 
+            --bg-card: #FFFFFF; 
+            --bg-input: #F9FAFB;
+            --text-main: #1C1C1E; 
+            --text-muted: #8E8E93;
+            --border: #E5E5EA;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        body.dark-mode {
+            --bg-body: #000000; 
+            --bg-card: #1C1C1E; 
+            --bg-input: #2C2C2E;
+            --text-main: #F2F2F7; 
+            --text-muted: #AEAEB2;
+            --border: #38383A;
+            --shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 80px; transition: background-color 0.3s, color 0.3s; }
+        
+        .header { padding: 20px; text-align: center; background: var(--bg-card); box-shadow: 0 1px 0 var(--border); position: sticky; top: 0; z-index: 10; transition: background 0.3s;}
+        .header h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        .header p { margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .btn-dark-mode { position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-main); transition: transform 0.3s; }
+        
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 15px; transition: background 0.3s; border: 1px solid var(--border);}
+        
+        .btn-utama { background-color: var(--primary); color: white; border: none; padding: 14px 20px; font-size: 15px; font-weight: 600; border-radius: 12px; width: 100%; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
+        .btn-utama:active { transform: scale(0.96); }
+        .btn-outline { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); box-shadow: none; }
+        .btn-outline:active { background-color: var(--bg-input); }
+
+        .input-css { width: 100%; padding: 14px; margin-top: 5px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Inter', sans-serif; background: var(--bg-input); color: var(--text-main); transition: border 0.2s; box-sizing: border-box; }
+        .input-css:focus { outline: none; border-color: var(--primary); background: var(--bg-card);}
+        .input-kunci { font-family: monospace; font-size: 16px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 5px; display: block; }
+        
+        .camera-container { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background-color: #000; aspect-ratio: 3/4; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        #kamera { width: 100%; height: 100%; object-fit: cover; }
+        .scan-area { position: absolute; top: 10%; left: 10%; right: 10%; bottom: 10%; border: 2px dashed rgba(255,255,255,0.6); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.4); pointer-events: none; }
+        .scan-area::after { content: 'Posisikan LJK di dalam kotak'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; white-space: nowrap;}
+        #kanvasHasil { width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border); }
+
+        .score-card { background: var(--bg-input); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border); margin-bottom: 15px;}
+        .score-card h1 { font-size: 48px; margin: 10px 0; font-weight: 800; letter-spacing: -1px; }
+        .stats-badge-wrap { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .stats-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 13px; min-width: 500px; }
+        th { background-color: var(--bg-input); padding: 12px; text-align: center; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-main); font-weight: 500; }
+        .text-left { text-align: left; }
+        .badge-score { background: var(--primary); color: white; padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        
+        .wa-btn { background: #25D366; color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .wa-btn:active { transform: scale(0.9); }
+
+        /* 🔥 NAVBAR BAWAH & ANIMASI ICON SVG 🔥 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card); display: flex; justify-content: space-around; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -1px 0 var(--border); z-index: 100; transition: background 0.3s; }
+        .nav-item { background: none; border: none; flex: 1; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; gap: 4px; cursor: pointer; transition: color 0.2s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { margin-bottom: 2px; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); stroke: currentColor; }
+        .nav-item.active .nav-icon { transform: scale(1.15); }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* 🔥 DORONG TOAST DI ATAS NAVBAR 🔥 */
+        .mb-navbar { margin-bottom: 80px !important; padding-bottom: env(safe-area-inset-bottom); }
+
+        #bannerInstall { display: none; background: var(--primary); color: white; padding: 12px 20px; text-align: center; font-weight: 600; font-size: 13px; position: sticky; top: 62px; z-index: 9; box-shadow: 0 2px 10px rgba(0,122,255,0.3); }
+        #bannerInstall span { text-decoration: underline; cursor: pointer; margin-left: 8px; }
+        
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>LJK Scanner Pro</h2>
+        <p>Smart Vision AI - V5.9</p>
+        <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()">🌙</button>
+    </div>
+    
+    <div id="bannerInstall">
+        Buka lebih cepat dari Home Screen! <span onclick="installAplikasi()">Install App</span>
+    </div>
+
+    <div class="container">
+
+        <div id="tab-scan" class="tab-content active">
+            <div class="card" style="margin-bottom: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label class="switch">
+                            <input type="checkbox" id="cbAutoScan" onchange="toggleAutoScan()" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <span style="font-weight: 600; font-size: 13px; color: var(--text-main);">Auto-Scan</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px;" title="Aktifkan Suara AI">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-main);"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <label class="switch">
+                            <input type="checkbox" id="cbSuaraAI" onchange="simpanPengaturan()" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <span style="font-weight: 600; font-size: 13px; color: var(--text-main);">Suara AI</span>
+                    </div>
+                </div>
+
+                <div class="camera-container" id="wadahKamera" style="display: none;">
+                    <video id="kamera" autoplay playsinline></video>
+                    <div class="scan-area"></div>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top: 15px;">
+                    <button class="btn-utama" id="btnNyalakan" onclick="mulaiKamera()">📸 Nyalakan Kamera</button>
+                    <button class="btn-utama" id="btnAmbil" style="display: none;" onclick="ambilFotoManual()">Jepret LJK</button>
+                    <button class="btn-utama btn-outline" style="width: auto; padding: 0 15px;" onclick="document.getElementById('inputFoto').click()" title="Upload Foto">📁</button>
+                </div>
+                <input type="file" id="inputFoto" accept="image/*" multiple style="display: none;">
+                
+                <canvas id="kanvasFoto"></canvas>
+                <canvas id="kanvasHasil" style="display: none;"></canvas>
+            </div>
+
+            <div id="hasilUjian"></div>
+        </div>
+
+        <div id="tab-riwayat" class="tab-content">
+            
+            <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                <button class="btn-utama" id="btnStatistik" onclick="tampilkanStatistik()">📈 Analisis Soal</button>
+                <button class="btn-utama btn-outline" id="btnInvestigasi" onclick="tampilkanInvestigasi()">🕵️ Nyontek</button>
+            </div>
+
+            <div id="wadahStatistik" style="display:none; margin-bottom: 15px;"></div>
+            <div id="wadahInvestigasi" style="display:none; margin-bottom: 15px;"></div>
+
+            <div class="card" style="padding: 0;">
+                <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; font-size: 14px;" id="countKelas">0 Siswa</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="wa-btn" style="background: var(--danger); font-size:11px;" onclick="resetRiwayat()">🗑️ Reset</button>
+                        <button class="wa-btn" style="background: var(--primary); font-size:11px;" id="btnDownloadExcel" onclick="downloadExcel()">⬇️ Excel</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="tabelRiwayat"></table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-pengaturan" class="tab-content">
+            
+            <div class="card">
+                <div style="margin-bottom:15px;">
+                    <h3 style="margin-bottom:0; font-size:13px;">Profil Kelas</h3>
+                    <p style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-top:8px; margin-bottom:8;">Pilih, simpan (Preset), atau hapus data kelas (Internal Browser).</p>
+                </div>
+                
+                <div style="display:flex; gap:8px; margin-bottom: 15px;">
+                    <select id="pilihProfil" class="input-css" style="margin:0; flex:1;" onchange="muatProfil()">
+                        <option value="">-- Profil Baru --</option>
+                    </select>
+                    <button class="wa-btn" style="background:var(--success); padding:0 14px; font-size:16px;" onclick="simpanProfilBaru()" title="Simpan Profil Baru">💾</button>
+                    <button class="wa-btn" style="background:var(--danger); padding:0 14px; font-size:16px;" onclick="hapusProfil()" title="Hapus Profil">🗑️</button>
+                </div>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-utama btn-outline" style="font-size:13px; padding:10px;" onclick="backupDataToFile()">📤 Export Data</button>
+                    <button class="btn-utama btn-outline" style="font-size:13px; padding:10px;" onclick="triggerRestoreFile()">📥 Restore Data</button>
+                    <input type="file" id="inputRestoreFile" accept=".json" style="display:none;">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
+                        <label style="margin-bottom:0;">Kunci Jawaban</label>
+                        <span id="counterKunci" style="font-size:11px; font-weight:bold; color:var(--primary); background:var(--bg-input); padding:2px 8px; border-radius:10px; border:1px solid var(--primary);">0 / 60 Soal</span>
+                    </div>
+                    <p style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-top:8; margin-bottom:8px;"><b>X</b> untuk mengabaikan soal,<b>*</b> untuk membonuskan soal, dan <b>/</b> untuk jawaban ganda (Cth: <b>A/E</b>).</p>
+                    <input type="text" id="inputKunci" class="input-css input-kunci" value="ABCDEABCDEABCDEABCDEABCDE" maxlength="150" oninput="updateCounterKunci()" onchange="simpanPengaturan()">
+                </div>
+                
+                <div class="form-group">
+                    <label>Sistem Penilaian</label>
+                    <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
+                        <option value="standar">Persentase Standar (0 - 100)</option>
+                        <option value="utbk">Try Out UTBK (+4, -1, 0)</option>
+                        <option value="bobot">Berdasarkan Bobot (Custom)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="wadahBobot" style="display:none; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary);">
+                    <label style="color: var(--primary);">Bobot Nilai Per Soal</label>
+                    <p style="font-size:10px; color:var(--text-muted); margin-top:-5px; margin-bottom:8px;">Ketik 1 angka untuk semua soal (cth: <b>2.5</b>), ATAU pisahkan dengan koma untuk tiap soal (cth: <b>1, 2, 1.5, 3...</b>)</p>
+                    <input type="text" id="inputBobot" class="input-css" value="1" onchange="simpanPengaturan()" style="background: var(--bg-card); font-family: monospace; font-weight: bold;">
+                </div>
+
+                <div class="form-group">
+                    <label>Batas KKM (Kelulusan)</label>
+                    <input type="number" id="inputKKM" class="input-css" value="75" style="width: 100px; text-align: center; font-weight: bold;" onchange="simpanPengaturan()">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:0px; font-size:13px;">Kop LJK (Template Cetak)</h3>
+                <p style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-top:8px; margin-bottom:8px;">Ubah kop surat untuk di-print di kertas LJK.</p>
+                
+                <div class="form-group">
+                    <input type="text" id="kopBaris1" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 1 (Nama Ujian)" onchange="simpanKop()">
+                    <input type="text" id="kopBaris2" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 2 (Tahun Ajaran)" onchange="simpanKop()">
+                    <input type="text" id="kopBaris3" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 3 (Nama Instansi)" onchange="simpanKop()">
+                    <input type="text" id="kopBaris4" class="input-css" style="font-size:12px; margin-bottom:15px;" placeholder="Baris 4 (Alamat Instansi)" onchange="simpanKop()">
+                </div>
+                
+                <div style="display:flex; gap:15px; align-items: flex-end;">
+                    <div style="flex:1;">
+                        <label style="font-size:13px; font-weight:bold; display:block; margin-top:-5px; margin-bottom:15px;">Logo Kop Surat</label>
+                        <input type="file" id="inputLogo1" accept="image/png, image/jpeg" style="display:none" onchange="prosesLogo(this, 'logo1')">
+                        <div style="border:2px dashed var(--border); border-radius:10px; padding:15px; text-align:center; cursor:pointer; background:var(--bg-input); transition: border 0.2s;" onclick="document.getElementById('inputLogo1').click()" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                            <img id="previewLogo1" style="max-width:60px; max-height:60px; display:none; margin:0 auto 10px auto;">
+                            <div style="font-size:13px; color:var(--primary); font-weight:600;">Pilih Gambar</div>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <button class="btn-utama" style="width: 100%; height: 50px;" onclick="window.open('template-ljk.html', '_blank')">🖨️ Cetak LJK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="margin:0; font-weight:bold; font-size:14px;">Database Siswa</label>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-utama btn-outline" style="width:auto; padding:6px 12px; font-size:11px; border-radius:8px;" onclick="document.getElementById('inputExcelSiswa').click()">
+                            📄 Import Excel
+                        </button>
+                        <input type="file" id="inputExcelSiswa" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelSiswa(event)">
+                    </div>
+                </div>
+                <textarea id="inputDBSiswa" class="input-css" rows="6" placeholder="Format: ID=Nama (Contoh: 12345=Budi)" onchange="simpanPengaturan()">40961=Agus (Contoh)
+98765=Budi (Contoh)</textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('scan', this)">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Scan</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('riwayat', this)">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <span>Riwayat</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('pengaturan', this)">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Setelan</span>
+        </button>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="ui.js"></script>
+    <script src="scanner.js"></script>
+    <script src="analytics.js"></script>
+    <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="console.log('OpenCV Siap!')"></script>
+</body>
+</html>
