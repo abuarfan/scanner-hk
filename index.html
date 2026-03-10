@@ -264,10 +264,10 @@
                 <div class="card">
                     <div class="form-group">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
-                            <label style="margin-bottom:0;">Kunci Jawaban</label>
+                            <label style="margin-bottom:8;">Kunci Jawaban</label>
                             <span id="counterKunci" style="font-size:11px; font-weight:bold; color:var(--primary); background:var(--bg-input); padding:2px 8px; border-radius:10px; border:1px solid var(--primary);">0 / 60 Soal</span>
                         </div>
-                        <p style="font-size:10px; color:var(--text-muted); margin-top:0; margin-bottom:8px;">Gunakan <b>X</b> batalkan soal, <b>*</b> bonus, dan <b>/</b> opsi ganda (Cth: <b>A/E</b>).</p>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:0; margin-bottom:8px;">Gunakan <b>X</b> = abaikan soal, <b>*</b> = bonus, dan <b>/</b> = opsi ganda (misal: <b>A/E</b>).</p>
                         <input type="text" id="inputKunci" class="input-css input-kunci" value="ABCDEABCDEABCDEABCDEABCDE" maxlength="150" oninput="updateCounterKunci()" onchange="simpanPengaturan()">
                     </div>
                     
@@ -282,7 +282,7 @@
                     
                     <div class="form-group" id="wadahBobot" style="display:none; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary);">
                         <label style="color: var(--primary);">Bobot Nilai Per Soal</label>
-                        <p style="font-size:10px; color:var(--text-muted); margin-top:-5px; margin-bottom:8px;">Ketik 1 angka (cth: <b>2.5</b>), ATAU pisahkan koma tiap soal (cth: <b>1, 2, 1.5...</b>)</p>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:-5px; margin-bottom:8px;">Ketik 1 angka (misal: <b>2.5</b>), atau pisahkan koma tiap soal (misal: <b>1, 2, 1.5,...</b>)</p>
                         <input type="text" id="inputBobot" class="input-css" value="1" onchange="simpanPengaturan()" style="background: var(--bg-card); font-family: monospace; font-weight: bold;">
                     </div>
 
