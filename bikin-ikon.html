@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Icon Generator LJK Pro</title>
+    <style>
+        body { background: #1C1C1E; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
+        canvas { border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin: 20px; width: 256px; }
+        button { background: #007AFF; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 10px; }
+        button.hijau { background: #34C759; }
+    </style>
+</head>
+<body>
+
+    <h2>🖼️ PWA Icon Generator</h2>
+    <p>Klik tombol di bawah untuk mendownload icon aplikasi.</p>
+    
+    <canvas id="kanvasIkon" width="512" height="512"></canvas>
+    
+    <br>
+    <button onclick="downloadIcon(192)">⬇️ Download icon-192.png</button>
+    <button class="hijau" onclick="downloadIcon(512)">⬇️ Download icon-512.png</button>
+
+    <script>
+        function drawIcon(ctx, size) {
+            let scale = size / 512;
+            ctx.scale(scale, scale);
+
+            // Background Biru Gradasi Khas Apple
+            let grd = ctx.createLinearGradient(0, 0, 512, 512);
+            grd.addColorStop(0, "#0A84FF"); grd.addColorStop(1, "#0056b3");
+            ctx.fillStyle = grd; ctx.fillRect(0, 0, 512, 512);
+
+            function roundRect(x, y, w, h, r) {
+                ctx.beginPath(); ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+                ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
+                ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y); ctx.closePath(); ctx.fill();
+            }
+
+            // Kertas LJK
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 20; ctx.shadowOffsetY = 10;
+            roundRect(110, 80, 292, 352, 24);
+            ctx.shadowColor = "transparent";
+
+            // Garis Teks Kop
+            ctx.fillStyle = "#E5E5EA";
+            roundRect(150, 120, 150, 16, 8); roundRect(150, 150, 100, 16, 8);
+
+            // Bulatan Baris 1
+            ctx.beginPath(); ctx.arc(170, 230, 18, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(230, 230, 18, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#1C1C1E"; // Diisi Hitam
+            ctx.beginPath(); ctx.arc(290, 230, 18, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#E5E5EA";
+            ctx.beginPath(); ctx.arc(350, 230, 18, 0, Math.PI*2); ctx.fill();
+
+            // Bulatan Baris 2 (Jawaban Benar Hijau)
+            ctx.beginPath(); ctx.arc(170, 290, 18, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#34C759"; 
+            ctx.beginPath(); ctx.arc(230, 290, 18, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#E5E5EA";
+            ctx.beginPath(); ctx.arc(290, 290, 18, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(350, 290, 18, 0, Math.PI*2); ctx.fill();
+
+            // Efek Laser Scanner
+            ctx.fillStyle = "rgba(52, 199, 89, 0.4)"; ctx.fillRect(80, 280, 352, 20);
+            ctx.fillStyle = "#34C759"; ctx.fillRect(80, 288, 352, 4);
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset scale
+        }
+
+        // Gambar saat web dibuka
+        drawIcon(document.getElementById('kanvasIkon').getContext('2d'), 512);
+
+        function downloadIcon(size) {
+            let canvasTemp = document.createElement('canvas');
+            canvasTemp.width = size; canvasTemp.height = size;
+            drawIcon(canvasTemp.getContext('2d'), size);
+            
+            let link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvasTemp.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
