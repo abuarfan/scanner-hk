@@ -296,11 +296,21 @@ async function installAplikasi() {
 window.addEventListener('appinstalled', () => { if(bannerInstall) bannerInstall.style.display = 'none'; penahanPrompt = null; Toast.fire({ icon: 'success', title: 'Berhasil Diinstall!' }); });
 if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) { if(bannerInstall) bannerInstall.style.display = 'none'; }
 
+// 🔥 FUNGSI NAVIGASI UTAMA DENGAN AUTO-RESET SUB-TAB 🔥
 function switchTab(tabId, element) {
+    // Pindah Tab Utama
     document.querySelectorAll('.tab-content').forEach(tab => { tab.classList.remove('active'); });
     document.querySelectorAll('.nav-item').forEach(nav => { nav.classList.remove('active'); });
     document.getElementById('tab-' + tabId).classList.add('active');
-    element.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' });
+    element.classList.add('active'); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Cerdas me-reset Sub-Tab ke Default setiap kali menu bawah diklik
+    if (tabId === 'riwayat' && typeof switchSubTab === 'function') {
+        switchSubTab('nilai'); // Default Riwayat: Daftar Nilai
+    } else if (tabId === 'pengaturan' && typeof switchSetelanTab === 'function') {
+        switchSetelanTab('kunci'); // Default Setelan: Kunci & Nilai
+    }
 }
 
 // 🔥 LOGIKA SWITCH SUB-TAB DENGAN AUTO-SYNC 🔥
@@ -326,5 +336,24 @@ function switchSubTab(tabName) {
         document.getElementById('btnSubNyontek').classList.add('active');
         document.getElementById('sub-nyontek').classList.add('active');
         if (typeof tampilkanInvestigasi === 'function') tampilkanInvestigasi(); // Auto-Render Nyontek
+    }
+}
+
+// 🔥 LOGIKA SWITCH SUB-TAB UNTUK MENU SETELAN 🔥
+function switchSetelanTab(tabName) {
+    // Matikan semua tombol & konten setelan
+    document.querySelectorAll('#tab-pengaturan .sub-nav-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#tab-pengaturan .sub-tab-content').forEach(content => content.classList.remove('active'));
+
+    // Aktifkan yang dipilih
+    if (tabName === 'kunci') {
+        document.getElementById('btnSetKunci').classList.add('active');
+        document.getElementById('set-kunci').classList.add('active');
+    } else if (tabName === 'cetak') {
+        document.getElementById('btnSetCetak').classList.add('active');
+        document.getElementById('set-cetak').classList.add('active');
+    } else if (tabName === 'siswa') {
+        document.getElementById('btnSetSiswa').classList.add('active');
+        document.getElementById('set-siswa').classList.add('active');
     }
 }

@@ -160,20 +160,59 @@ function downloadExcel() {
         return;
     }
 
+    if (typeof simpanPengaturan === 'function') simpanPengaturan(true);
+
     Toast.fire({ icon: 'info', title: 'Mempersiapkan Laporan Lengkap...' });
 
     let wb = XLSX.utils.book_new();
     let totalSiswa = riwayatData.length;
     let kunciTokens = typeof parseKunci === 'function' ? parseKunci(document.getElementById('inputKunci').value) : [];
 
-    // --- SHEET 1: REKAP NILAI ---
-    let dataNilai = riwayatData.map(d => ({
-        "ID / NIS": d.id, "Nama Siswa": d.nama, "Benar": d.benar, "Salah": d.salah, "Kosong": d.kosong, "Ganda": d.ganda, "Nilai Akhir": d.nilai
-    }));
+    let tipePenilaian = document.getElementById('sistemPenilaian').value;
+    let labelNilai = "Nilai Akhir";
+    if (tipePenilaian === 'utbk') labelNilai = "Nilai Akhir (Sistem UTBK)";
+    else if (tipePenilaian === 'bobot') labelNilai = "Nilai Akhir (Sistem Bobot)";
+    else labelNilai = "Nilai Akhir (Sistem Standar)";
+
+    // --- SHEET 1: RINGKASAN KELAS (BARU) ---
+    let batasKKM = parseFloat(document.getElementById('inputKKM').value);
+    if (isNaN(batasKKM)) batasKKM = 75;
+
+    let jmlLulus = 0; let jmlRemedial = 0; let totalNilai = 0; 
+    let nilaiMin = riwayatData[0].nilai; let nilaiMax = riwayatData[0].nilai;
+
+    riwayatData.forEach(d => { 
+        if(d.nilai >= batasKKM) jmlLulus++; else jmlRemedial++; 
+        totalNilai += d.nilai;
+        if(d.nilai < nilaiMin) nilaiMin = d.nilai;
+        if(d.nilai > nilaiMax) nilaiMax = d.nilai;
+    });
+
+    let rataRata = parseFloat((totalNilai / totalSiswa).toFixed(2));
+    let persenLulus = Math.round((jmlLulus / totalSiswa) * 100);
+    let persenRemedial = Math.round((jmlRemedial / totalSiswa) * 100);
+
+    let dataRingkasan = [
+        { "Statistik Kelas": "Total Siswa Scan", "Hasil": `${totalSiswa} Siswa` },
+        { "Statistik Kelas": "Rata-Rata Kelas", "Hasil": rataRata },
+        { "Statistik Kelas": "Nilai Tertinggi", "Hasil": parseFloat(nilaiMax.toFixed(2)) },
+        { "Statistik Kelas": "Nilai Terendah", "Hasil": parseFloat(nilaiMin.toFixed(2)) },
+        { "Statistik Kelas": `Tuntas (≥ ${batasKKM})`, "Hasil": `${jmlLulus} Siswa (${persenLulus}%)` },
+        { "Statistik Kelas": `Remedial (< ${batasKKM})`, "Hasil": `${jmlRemedial} Siswa (${persenRemedial}%)` }
+    ];
+    let wsRingkasan = XLSX.utils.json_to_sheet(dataRingkasan);
+    XLSX.utils.book_append_sheet(wb, wsRingkasan, "Ringkasan Kelas");
+
+    // --- SHEET 2: REKAP NILAI ---
+    let dataNilai = riwayatData.map(d => {
+        let row = { "ID / NIS": d.id, "Nama Siswa": d.nama, "Benar": d.benar, "Salah": d.salah, "Kosong": d.kosong, "Ganda": d.ganda };
+        row[labelNilai] = d.nilai; 
+        return row;
+    });
     let wsNilai = XLSX.utils.json_to_sheet(dataNilai);
     XLSX.utils.book_append_sheet(wb, wsNilai, "Rekap Nilai");
 
-    // --- SHEET 2: ANALISIS BUTIR SOAL ---
+    // --- SHEET 3: ANALISIS BUTIR SOAL ---
     let dataAnalisis = [];
     for (let i = 0; i < 60; i++) {
         let tk = i < kunciTokens.length ? kunciTokens[i] : null;
@@ -183,16 +222,14 @@ function downloadExcel() {
 
         riwayatData.forEach(siswa => {
             let r = siswa.rincian[i];
-            if (r) {
-                if (r.status === "BENAR") jmlBenar++; else if (r.status === "SALAH") jmlSalah++; else if (r.status === "KOSONG") jmlKosong++; else if (r.status === "GANDA") jmlGanda++;
-            }
+            if (r) { if (r.status === "BENAR") jmlBenar++; else if (r.status === "SALAH") jmlSalah++; else if (r.status === "KOSONG") jmlKosong++; else if (r.status === "GANDA") jmlGanda++; }
         });
         dataAnalisis.push({ "No. Soal": i + 1, "Kunci": kunciTeks, "Menjawab Benar": jmlBenar, "Menjawab Salah": jmlSalah, "Kosong": jmlKosong, "Ganda": jmlGanda, "Daya Serap (%)": Math.round((jmlBenar / totalSiswa) * 100) + "%" });
     }
     let wsAnalisis = XLSX.utils.json_to_sheet(dataAnalisis);
     XLSX.utils.book_append_sheet(wb, wsAnalisis, "Analisis Soal");
 
-    // --- SHEET 3: INVESTIGASI NYONTEK ---
+    // --- SHEET 4: INVESTIGASI NYONTEK ---
     let laporanCurang = [];
     for (let i = 0; i < riwayatData.length; i++) {
         for (let j = i + 1; j < riwayatData.length; j++) {
@@ -212,7 +249,7 @@ function downloadExcel() {
     let wsNyontek = XLSX.utils.json_to_sheet(dataNyontek);
     XLSX.utils.book_append_sheet(wb, wsNyontek, "Deteksi Kecurangan");
 
-    // --- SHEET 4: MATRIKS JAWABAN SISWA ---
+    // --- SHEET 5: MATRIKS JAWABAN SISWA ---
     let dataDetail = riwayatData.map(d => {
         let row = { "ID / NIS": d.id, "Nama Siswa": d.nama };
         for(let i = 0; i < 60; i++) {

@@ -227,79 +227,90 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="form-group">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
-                        <label style="margin-bottom:0;">Kunci Jawaban</label>
-                        <span id="counterKunci" style="font-size:11px; font-weight:bold; color:var(--primary); background:var(--bg-input); padding:2px 8px; border-radius:10px; border:1px solid var(--primary);">0 / 60 Soal</span>
-                    </div>
-                    <p style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-top:8; margin-bottom:8px;"><b>X</b> untuk mengabaikan soal,<b>*</b> untuk membonuskan soal, dan <b>/</b> untuk jawaban ganda (Cth: <b>A/E</b>).</p>
-                    <input type="text" id="inputKunci" class="input-css input-kunci" value="ABCDEABCDEABCDEABCDEABCDE" maxlength="150" oninput="updateCounterKunci()" onchange="simpanPengaturan()">
-                </div>
-                
-                <div class="form-group">
-                    <label>Sistem Penilaian</label>
-                    <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
-                        <option value="standar">Persentase Standar (0 - 100)</option>
-                        <option value="utbk">Try Out UTBK (+4, -1, 0)</option>
-                        <option value="bobot">Berdasarkan Bobot (Custom)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group" id="wadahBobot" style="display:none; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary);">
-                    <label style="color: var(--primary);">Bobot Nilai Per Soal</label>
-                    <p style="font-size:10px; color:var(--text-muted); margin-top:-5px; margin-bottom:8px;">Ketik 1 angka untuk semua soal (cth: <b>2.5</b>), ATAU pisahkan dengan koma untuk tiap soal (cth: <b>1, 2, 1.5, 3...</b>)</p>
-                    <input type="text" id="inputBobot" class="input-css" value="1" onchange="simpanPengaturan()" style="background: var(--bg-card); font-family: monospace; font-weight: bold;">
-                </div>
+            <div class="sub-nav-container">
+                <button class="sub-nav-btn active" id="btnSetKunci" onclick="switchSetelanTab('kunci')">📝 Kunci & Nilai</button>
+                <button class="sub-nav-btn" id="btnSetCetak" onclick="switchSetelanTab('cetak')">🖨️ Cetak LJK</button>
+                <button class="sub-nav-btn" id="btnSetSiswa" onclick="switchSetelanTab('siswa')">👥 Data Siswa</button>
+            </div>
 
-                <div class="form-group">
-                    <label>Batas KKM (Kelulusan)</label>
-                    <input type="number" id="inputKKM" class="input-css" value="75" style="width: 100px; text-align: center; font-weight: bold;" onchange="simpanPengaturan()">
+            <div id="set-kunci" class="sub-tab-content active">
+                <div class="card">
+                    <div class="form-group">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
+                            <label style="margin-bottom:0;">Kunci Jawaban</label>
+                            <span id="counterKunci" style="font-size:11px; font-weight:bold; color:var(--primary); background:var(--bg-input); padding:2px 8px; border-radius:10px; border:1px solid var(--primary);">0 / 60 Soal</span>
+                        </div>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:0; margin-bottom:8px;">Gunakan <b>X</b> batalkan soal, <b>*</b> bonus, dan <b>/</b> opsi ganda (Cth: <b>A/E</b>).</p>
+                        <input type="text" id="inputKunci" class="input-css input-kunci" value="ABCDEABCDEABCDEABCDEABCDE" maxlength="150" oninput="updateCounterKunci()" onchange="simpanPengaturan()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Sistem Penilaian</label>
+                        <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
+                            <option value="standar">Persentase Standar (0 - 100)</option>
+                            <option value="utbk">Try Out UTBK (+4, -1, Kosong 0)</option>
+                            <option value="bobot">Berdasarkan Bobot (Custom)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="wadahBobot" style="display:none; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary);">
+                        <label style="color: var(--primary);">Bobot Nilai Per Soal</label>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:-5px; margin-bottom:8px;">Ketik 1 angka (cth: <b>2.5</b>), ATAU pisahkan koma tiap soal (cth: <b>1, 2, 1.5...</b>)</p>
+                        <input type="text" id="inputBobot" class="input-css" value="1" onchange="simpanPengaturan()" style="background: var(--bg-card); font-family: monospace; font-weight: bold;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Batas KKM (Kelulusan)</label>
+                        <input type="number" id="inputKKM" class="input-css" value="75" style="width: 100px; text-align: center; font-weight: bold;" onchange="simpanPengaturan()">
+                    </div>
                 </div>
             </div>
 
-            <div class="card">
-                <h3 style="margin-bottom:0px; font-size:13px;">Kop LJK (Template Cetak)</h3>
-                <p style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-top:8px; margin-bottom:8px;">Ubah kop surat untuk di-print di kertas LJK.</p>
-                
-                <div class="form-group">
-                    <input type="text" id="kopBaris1" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 1 (Nama Ujian)" onchange="simpanKop()">
-                    <input type="text" id="kopBaris2" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 2 (Tahun Ajaran)" onchange="simpanKop()">
-                    <input type="text" id="kopBaris3" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 3 (Nama Instansi)" onchange="simpanKop()">
-                    <input type="text" id="kopBaris4" class="input-css" style="font-size:12px; margin-bottom:15px;" placeholder="Baris 4 (Alamat Instansi)" onchange="simpanKop()">
-                </div>
-                
-                <div style="display:flex; gap:15px; align-items: flex-end;">
-                    <div style="flex:1;">
-                        <label style="font-size:13px; font-weight:bold; display:block; margin-top:-5px; margin-bottom:15px;">Logo Kop Surat</label>
-                        <input type="file" id="inputLogo1" accept="image/png, image/jpeg" style="display:none" onchange="prosesLogo(this, 'logo1')">
-                        <div style="border:2px dashed var(--border); border-radius:10px; padding:15px; text-align:center; cursor:pointer; background:var(--bg-input); transition: border 0.2s;" onclick="document.getElementById('inputLogo1').click()" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-                            <img id="previewLogo1" style="max-width:60px; max-height:60px; display:none; margin:0 auto 10px auto;">
-                            <div style="font-size:13px; color:var(--primary); font-weight:600;">Pilih Gambar</div>
+            <div id="set-cetak" class="sub-tab-content">
+                <div class="card">
+                    <h3 style="margin-top:0; font-size:13px;">Kop & Desain Cetak</h3>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:-5px; margin-bottom:15px;">Sesuaikan teks dan logo untuk diprint ke kertas HVS.</p>
+                    
+                    <div class="form-group">
+                        <input type="text" id="kopBaris1" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 1 (Nama Ujian)" onchange="simpanKop()">
+                        <input type="text" id="kopBaris2" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 2 (Tahun Ajaran)" onchange="simpanKop()">
+                        <input type="text" id="kopBaris3" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 3 (Nama Sekolah)" onchange="simpanKop()">
+                        <input type="text" id="kopBaris4" class="input-css" style="font-size:12px; margin-bottom:5px;" placeholder="Baris 4 (Alamat Sekolah)" onchange="simpanKop()">
+                    </div>
+                    
+                    <div style="display:flex; gap:15px; align-items: flex-end;">
+                        <div style="flex:1;">
+                            <label style="font-size:13px; font-weight:bold; display:block; margin-bottom:15px;">Logo Sekolah</label>
+                            <input type="file" id="inputLogo1" accept="image/png, image/jpeg" style="display:none" onchange="prosesLogo(this, 'logo1')">
+                            <div style="border:2px dashed var(--border); border-radius:10px; padding:15px; text-align:center; cursor:pointer; background:var(--bg-input); transition: border 0.2s;" onclick="document.getElementById('inputLogo1').click()">
+                                <img id="previewLogo1" style="max-width:60px; max-height:60px; display:none; margin:0 auto 10px auto;">
+                                <div style="font-size:13px; color:var(--primary); font-weight:600;">📁 Pilih Gambar</div>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <button class="btn-utama" style="width: 100%; height: 50px;" onclick="window.open('template-ljk.html', '_blank')">🖨️ Cetak LJK</button>
                         </div>
                     </div>
-                    <div style="flex:1;">
-                        <button class="btn-utama" style="width: 100%; height: 50px;" onclick="window.open('template-ljk.html', '_blank')">🖨️ Cetak LJK</button>
-                    </div>
                 </div>
             </div>
 
-            <div class="card" style="margin-bottom: 40px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <label style="margin:0; font-weight:bold; font-size:14px;">Database Siswa</label>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-utama btn-outline" style="width:auto; padding:6px 12px; font-size:11px; border-radius:8px;" onclick="document.getElementById('inputExcelSiswa').click()">
-                            📄 Import Excel
-                        </button>
-                        <input type="file" id="inputExcelSiswa" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelSiswa(event)">
+            <div id="set-siswa" class="sub-tab-content">
+                <div class="card" style="margin-bottom: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label style="margin:0; font-weight:bold; font-size:14px;">Database Siswa</label>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-utama btn-outline" style="width:auto; padding:6px 12px; font-size:13px; border-radius:8px;" onclick="document.getElementById('inputExcelSiswa').click()">
+                                📄 Import Excel
+                            </button>
+                            <input type="file" id="inputExcelSiswa" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelSiswa(event)">
+                        </div>
                     </div>
-                </div>
-                <textarea id="inputDBSiswa" class="input-css" rows="6" placeholder="Format: ID=Nama (Contoh: 12345=Budi)" onchange="simpanPengaturan()">40961=Agus (Contoh)
+                    <textarea id="inputDBSiswa" class="input-css" rows="10" placeholder="Format: ID=Nama (Contoh: 12345=Budi)" onchange="simpanPengaturan()">40961=Agus (Contoh)
 98765=Budi (Contoh)</textarea>
+                </div>
             </div>
-        </div>
 
-    </div>
+        </div>
 
     <div class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('scan', this)">
