@@ -123,10 +123,18 @@ function putarSuara(isSukses) {
 
 function updateActionButtons() {
     const hasData = Array.isArray(riwayatData) && riwayatData.length > 0;
-    const btns = [document.getElementById('btnDownloadExcel'), document.getElementById('btnStatistik'), document.getElementById('btnInvestigasi')];
+    // PENTING: ID sudah disesuaikan dengan Sub-Tab yang baru
+    const btns = [
+        document.getElementById('btnDownloadExcel'), 
+        document.getElementById('btnSubAnalisis'), 
+        document.getElementById('btnSubNyontek')
+    ];
+    
     btns.forEach(btn => {
         if (!btn) return;
-        btn.disabled = !hasData; btn.style.opacity = hasData ? '1' : '0.55'; btn.style.cursor = hasData ? 'pointer' : 'not-allowed';
+        btn.disabled = !hasData; 
+        btn.style.opacity = hasData ? '1' : '0.55'; 
+        btn.style.cursor = hasData ? 'pointer' : 'not-allowed';
     });
 }
 
@@ -293,4 +301,30 @@ function switchTab(tabId, element) {
     document.querySelectorAll('.nav-item').forEach(nav => { nav.classList.remove('active'); });
     document.getElementById('tab-' + tabId).classList.add('active');
     element.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 🔥 LOGIKA SWITCH SUB-TAB DENGAN AUTO-SYNC 🔥
+function switchSubTab(tabName) {
+    // 1. Lakukan "Silent Refresh" (Hitung ulang semua nilai & KKM secara gaib)
+    if (typeof simpanPengaturan === 'function') { 
+        simpanPengaturan(true); 
+    }
+
+    // 2. Matikan semua tombol & konten
+    document.querySelectorAll('.sub-nav-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+
+    // 3. Aktifkan tab yang dipilih & Render ulang datanya secara fresh!
+    if (tabName === 'nilai') {
+        document.getElementById('btnSubNilai').classList.add('active');
+        document.getElementById('sub-nilai').classList.add('active');
+    } else if (tabName === 'analisis') {
+        document.getElementById('btnSubAnalisis').classList.add('active');
+        document.getElementById('sub-analisis').classList.add('active');
+        if (typeof tampilkanStatistik === 'function') tampilkanStatistik(); // Auto-Render Analisis
+    } else if (tabName === 'nyontek') {
+        document.getElementById('btnSubNyontek').classList.add('active');
+        document.getElementById('sub-nyontek').classList.add('active');
+        if (typeof tampilkanInvestigasi === 'function') tampilkanInvestigasi(); // Auto-Render Nyontek
+    }
 }

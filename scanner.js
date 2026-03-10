@@ -259,7 +259,9 @@ function prosesDeteksiKertas(scanMode = 'manual') {
             // PENTING: Panggil simpanRiwayat agar statistik grafik diperbarui secara absolut!
             simpanRiwayat();
 
-            document.getElementById('wadahStatistik').style.display = 'none'; document.getElementById('btnStatistik').innerHTML = '📈 Analisis Soal';
+            // Reset UI Analisis (Aman untuk Sub-Tab Baru)
+            let wStat = document.getElementById('wadahStatistik'); if(wStat) wStat.innerHTML = '';
+            
             let kanvasPotongan = document.getElementById('kanvasHasil'); kanvasPotongan.style.display = 'block';
             cv.imshow('kanvasHasil', gambarPotongan);
 

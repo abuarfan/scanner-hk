@@ -237,7 +237,7 @@ function normalisasiKunciJawaban() {
     return bersih;
 }
 
-function simpanPengaturan() {
+function simpanPengaturan(isSilent = false) {
     const kunciStr = normalisasiKunciJawaban();
     const tokens = parseKunci(kunciStr);
     
@@ -292,7 +292,10 @@ function simpanPengaturan() {
         
         simpanRiwayat(); 
     }
-    Toast.fire({ icon: 'success', title: 'Pengaturan Disimpan!' });
+    
+    if (!isSilent) {
+        Toast.fire({ icon: 'success', title: 'Pengaturan Disimpan!' });
+    }
 }
 
 function parseDBSiswa() {

@@ -1,28 +1,16 @@
-// ==================== ANALISIS BUTIR SOAL (VERSI TABEL) ====================
+// ==================== ANALISIS BUTIR SOAL (VERSI TABEL SUB-TAB) ====================
 function tampilkanStatistik() {
     let wadah = document.getElementById('wadahStatistik');
-    let btn = document.getElementById('btnStatistik');
-    let wInv = document.getElementById('wadahInvestigasi');
-    let bInv = document.getElementById('btnInvestigasi');
-
-    if (wInv && wInv.style.display === 'block') {
-        wInv.style.display = 'none';
-        if (bInv) bInv.innerHTML = '🕵️ Nyontek';
-    }
-
-    if (wadah.style.display === 'block') { 
-        wadah.style.display = 'none'; btn.innerHTML = '📈 Analisis Soal'; return; 
-    }
+    if(!wadah) return;
 
     let totalSiswa = riwayatData.length;
-    if(totalSiswa === 0) { Toast.fire({ icon: 'info', title: 'Belum ada data nilai!' }); return; }
-    
-    btn.innerHTML = 'Tutup Analisis';
-    wadah.style.display = 'block';
+    if(totalSiswa === 0) { 
+        wadah.innerHTML = '<div class="card" style="padding: 30px; text-align: center; color: var(--text-muted); font-weight: 600;">Belum ada data nilai. Silakan scan LJK terlebih dahulu.</div>'; 
+        return; 
+    }
 
-    // --- SINKRONISASI KKM DAN SISTEM PENILAIAN ---
     let batasKKM = parseFloat(document.getElementById('inputKKM').value);
-    if (isNaN(batasKKM)) batasKKM = 75; // Fallback aman jika kosong
+    if (isNaN(batasKKM)) batasKKM = 75;
 
     let jmlLulus = 0; let jmlRemedial = 0; let totalNilai = 0; 
     let nilaiMin = riwayatData[0].nilai; let nilaiMax = riwayatData[0].nilai;
@@ -34,7 +22,6 @@ function tampilkanStatistik() {
         if(d.nilai > nilaiMax) nilaiMax = d.nilai;
     });
 
-    // Hilangkan desimal berlebih akibat perhitungan javascript (contoh: 80.0000001 -> 80)
     let rataRata = parseFloat((totalNilai / totalSiswa).toFixed(2));
     nilaiMin = parseFloat(nilaiMin.toFixed(2));
     nilaiMax = parseFloat(nilaiMax.toFixed(2));
@@ -107,31 +94,15 @@ function tampilkanStatistik() {
     wadah.innerHTML = htmlStat;
 }
 
-// ==================== RADAR INDIKASI KECURANGAN (NYONTEK) ====================
+// ==================== RADAR INDIKASI KECURANGAN (SUB-TAB) ====================
 function tampilkanInvestigasi() {
     let wInv = document.getElementById('wadahInvestigasi');
-    let bInv = document.getElementById('btnInvestigasi');
-    let wStat = document.getElementById('wadahStatistik');
-    let bStat = document.getElementById('btnStatistik');
-
-    if (wStat && wStat.style.display === 'block') {
-        wStat.style.display = 'none';
-        if (bStat) bStat.innerHTML = '📈 Analisis Soal';
-    }
-
-    if (wInv.style.display === 'block') {
-        wInv.style.display = 'none';
-        bInv.innerHTML = '🕵️ Nyontek';
-        return;
-    }
+    if(!wInv) return;
 
     if (!riwayatData || riwayatData.length < 2) {
-        Toast.fire({ icon: 'warning', title: 'Minimal butuh 2 siswa untuk dibandingkan!' });
+        wInv.innerHTML = '<div class="card" style="padding: 30px; text-align: center; color: var(--text-muted); font-weight: 600;">Minimal butuh 2 data siswa untuk dianalisis.</div>';
         return;
     }
-
-    bInv.innerHTML = 'Tutup Investigasi';
-    wInv.style.display = 'block';
 
     let laporanCurang = [];
     for (let i = 0; i < riwayatData.length; i++) {
@@ -150,12 +121,7 @@ function tampilkanInvestigasi() {
             }
 
             if (salahSama >= 4) { 
-                laporanCurang.push({
-                    nama1: s1.nama,
-                    nama2: s2.nama,
-                    jumlahSama: salahSama,
-                    detail: detailSoal.join(', ')
-                });
+                laporanCurang.push({ nama1: s1.nama, nama2: s2.nama, jumlahSama: salahSama, detail: detailSoal.join(', ') });
             }
         }
     }
@@ -172,7 +138,7 @@ function tampilkanInvestigasi() {
     } else {
         laporanCurang.sort((a, b) => b.jumlahSama - a.jumlahSama);
         htmlReport += `<p style="font-size:13px; margin-top:0; color:var(--text-main);">Ditemukan pasangan dengan pola jawaban <b>SALAH</b> yang identik (≥4 Soal):</p>
-        <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">`;
+        <div style="max-height: 350px; overflow-y: auto; padding-right: 5px;">`;
         
         laporanCurang.forEach((item, idx) => { 
             htmlReport += `<div style="background:var(--bg-input); padding:12px; margin-bottom:10px; border-left:4px solid var(--danger); border-radius:8px; font-size:13px;">
@@ -202,13 +168,7 @@ function downloadExcel() {
 
     // --- SHEET 1: REKAP NILAI ---
     let dataNilai = riwayatData.map(d => ({
-        "ID / NIS": d.id,
-        "Nama Siswa": d.nama,
-        "Benar": d.benar,
-        "Salah": d.salah,
-        "Kosong": d.kosong,
-        "Ganda": d.ganda,
-        "Nilai Akhir": d.nilai
+        "ID / NIS": d.id, "Nama Siswa": d.nama, "Benar": d.benar, "Salah": d.salah, "Kosong": d.kosong, "Ganda": d.ganda, "Nilai Akhir": d.nilai
     }));
     let wsNilai = XLSX.utils.json_to_sheet(dataNilai);
     XLSX.utils.book_append_sheet(wb, wsNilai, "Rekap Nilai");
@@ -218,29 +178,16 @@ function downloadExcel() {
     for (let i = 0; i < 60; i++) {
         let tk = i < kunciTokens.length ? kunciTokens[i] : null;
         if (!tk || tk.includes('X')) continue; 
-
         let kunciTeks = tk.includes('*') ? 'BONUS' : tk.join('/');
         let jmlBenar = 0; let jmlSalah = 0; let jmlKosong = 0; let jmlGanda = 0;
 
         riwayatData.forEach(siswa => {
             let r = siswa.rincian[i];
             if (r) {
-                if (r.status === "BENAR") jmlBenar++;
-                else if (r.status === "SALAH") jmlSalah++;
-                else if (r.status === "KOSONG") jmlKosong++;
-                else if (r.status === "GANDA") jmlGanda++;
+                if (r.status === "BENAR") jmlBenar++; else if (r.status === "SALAH") jmlSalah++; else if (r.status === "KOSONG") jmlKosong++; else if (r.status === "GANDA") jmlGanda++;
             }
         });
-
-        dataAnalisis.push({
-            "No. Soal": i + 1,
-            "Kunci": kunciTeks,
-            "Menjawab Benar": jmlBenar,
-            "Menjawab Salah": jmlSalah,
-            "Kosong": jmlKosong,
-            "Ganda": jmlGanda,
-            "Daya Serap (%)": Math.round((jmlBenar / totalSiswa) * 100) + "%"
-        });
+        dataAnalisis.push({ "No. Soal": i + 1, "Kunci": kunciTeks, "Menjawab Benar": jmlBenar, "Menjawab Salah": jmlSalah, "Kosong": jmlKosong, "Ganda": jmlGanda, "Daya Serap (%)": Math.round((jmlBenar / totalSiswa) * 100) + "%" });
     }
     let wsAnalisis = XLSX.utils.json_to_sheet(dataAnalisis);
     XLSX.utils.book_append_sheet(wb, wsAnalisis, "Analisis Soal");
@@ -251,27 +198,16 @@ function downloadExcel() {
         for (let j = i + 1; j < riwayatData.length; j++) {
             let s1 = riwayatData[i]; let s2 = riwayatData[j];
             let salahSama = 0; let detailSoal = [];
-
             for (let k = 0; k < 60; k++) {
                 let r1 = s1.rincian[k]; let r2 = s2.rincian[k];
                 if (r1 && r2 && (r1.status === "SALAH" || r1.status === "GANDA") && r1.status === r2.status && r1.jawaban === r2.jawaban) {
                     salahSama++; detailSoal.push(`No.${k+1}(${r1.jawaban})`);
                 }
             }
-
-            if (salahSama >= 4) { 
-                laporanCurang.push({
-                    "Siswa 1": s1.nama,
-                    "Siswa 2": s2.nama,
-                    "Kemiripan Jawaban Salah": salahSama,
-                    "Rincian Soal (Jawaban)": detailSoal.join(', ')
-                });
-            }
+            if (salahSama >= 4) laporanCurang.push({ "Siswa 1": s1.nama, "Siswa 2": s2.nama, "Kemiripan Jawaban Salah": salahSama, "Rincian Soal (Jawaban)": detailSoal.join(', ') });
         }
     }
-    
     laporanCurang.sort((a, b) => b["Kemiripan Jawaban Salah"] - a["Kemiripan Jawaban Salah"]);
-    
     let dataNyontek = laporanCurang.length > 0 ? laporanCurang : [{"Keterangan": "Kelas Jujur & Aman! Tidak ditemukan indikasi kecurangan antar siswa."}];
     let wsNyontek = XLSX.utils.json_to_sheet(dataNyontek);
     XLSX.utils.book_append_sheet(wb, wsNyontek, "Deteksi Kecurangan");
@@ -293,6 +229,5 @@ function downloadExcel() {
     let namaMapel = document.getElementById('pilihProfil').value || "Tes_LJK";
     let namaFile = `Laporan_Pro_${namaMapel.replace(/[^a-z0-9]/gi, '_')}.xlsx`;
     XLSX.writeFile(wb, namaFile);
-    
     Toast.fire({ icon: 'success', title: 'File Excel Berhasil Diunduh!' });
 }
