@@ -1,19 +1,57 @@
 // ==================== CAMERA & AUTO-SCAN ====================
+let videoTrack = null;     
+let isSenterNyala = false; 
+
 function bersihkanMemoriCV(...mats) {
     mats.forEach(mat => { if (mat && typeof mat.delete === 'function') { try { mat.delete(); } catch(e) {} } });
 }
 
 async function mulaiKamera() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: false, // Mematikan mic agar tidak muncul notif blokir
+            video: { facingMode: "environment" } 
+        });
+        
         videoElement.srcObject = stream;
+        videoTrack = stream.getVideoTracks()[0];
+        
         document.getElementById('wadahKamera').style.display = 'block';
         document.getElementById('btnNyalakan').style.display = 'none';
         document.getElementById('btnAmbil').style.display = 'flex';
         document.getElementById('kanvasHasil').style.display = 'none';
         document.getElementById('hasilUjian').innerHTML = '';
+        
+        // MEMUNCULKAN TOMBOL SENTER
+        setTimeout(() => {
+            if (videoTrack && typeof videoTrack.getCapabilities === 'function') {
+                try {
+                    const capabilities = videoTrack.getCapabilities();
+                    let btnSenter = document.getElementById('btnSenter');
+                    if (capabilities.torch && btnSenter) {
+                        btnSenter.style.display = 'flex';
+                    }
+                } catch(e) { console.log("Senter tidak didukung"); }
+            }
+        }, 500);
+
         toggleAutoScan();
-    } catch (error) { Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Tidak dapat mengakses kamera HP Anda.' }); }
+    } catch (error) { 
+        // NOTIF ERROR DIHAPUS
+        console.warn("Info Kamera:", error);
+    }
+}
+
+async function toggleSenter() {
+    if (!videoTrack) return;
+    try {
+        isSenterNyala = !isSenterNyala;
+        await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] });
+        let btnSenter = document.getElementById('btnSenter');
+        if(btnSenter) btnSenter.innerHTML = isSenterNyala ? '💡' : '🔦';
+    } catch (err) {
+        console.error('Senter gagal dinyalakan:', err);
+    }
 }
 
 function toggleAutoScan() {
@@ -59,6 +97,24 @@ function ambilFotoManual() {
 
 function matikanKameraUI() {
     if(autoScanTimer) clearInterval(autoScanTimer);
+    
+    if (videoTrack) {
+        try {
+            if (isSenterNyala) {
+                videoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(e=>console.log(e));
+            }
+        } catch(e) {}
+        videoTrack.stop(); 
+        videoTrack = null;
+    }
+    isSenterNyala = false;
+    
+    let btnSenter = document.getElementById('btnSenter');
+    if(btnSenter) {
+        btnSenter.style.display = 'none';
+        btnSenter.innerHTML = '🔦';
+    }
+    
     document.getElementById('wadahKamera').style.display = 'none';
     document.getElementById('btnAmbil').style.display = 'none';
     document.getElementById('btnNyalakan').style.display = 'flex';
