@@ -1,6 +1,4 @@
-// 🔥 NAIKKAN ANGKA VERSI INI SETIAP KALI UPDATE KODE KE VERCEL 🔥
-const CACHE_NAME = 'ljk-scanner-v5.9'; 
-
+const CACHE_NAME = 'ljk-scanner-v1';
 const urlsToCache = [
     './',
     './index.html',
@@ -14,32 +12,10 @@ const urlsToCache = [
 
 // Menginstall Service Worker dan menyimpan file ke Cache
 self.addEventListener('install', event => {
-    // Memaksa service worker baru langsung aktif tanpa menunggu
-    self.skipWaiting(); 
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            console.log('Membuka cache:', CACHE_NAME);
+            console.log('Membuka cache');
             return cache.addAll(urlsToCache);
-        })
-    );
-});
-
-// 🔥 TUKANG SAPU CACHE LAMA (Wajib Ada) 🔥
-// Event ini akan menghapus cache versi lama (misal v1) saat v2 berjalan
-self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Menghapus cache versi lama:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => {
-            // Memaksa semua tab browser yang terbuka untuk memakai versi baru
-            return self.clients.claim();
         })
     );
 });

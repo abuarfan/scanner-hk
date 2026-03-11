@@ -350,20 +350,33 @@ function resetRiwayat() {
             riwayatData = []; simpanRiwayat(); 
             document.getElementById('hasilUjian').innerHTML = '';
             document.getElementById('kanvasHasil').style.display = 'none';
-            document.getElementById('wadahStatistik').style.display = 'none';
-            document.getElementById('btnStatistik').innerHTML = '📈 Analisis Soal';
+            
+            // 🔥 BUG FIX: MENGHAPUS REFERENSI btnStatistik USANG & RESET SUB-TAB 🔥
+            let wStat = document.getElementById('wadahStatistik'); if(wStat) wStat.innerHTML = '';
+            let wInv = document.getElementById('wadahInvestigasi'); if(wInv) wInv.innerHTML = '';
+            
             Swal.fire('Dihapus!', 'Data nilai kelas ini telah dikosongkan.', 'success');
         }
     });
 }
 
-// 🔥 BUG FIX: DIBERIKAN PROTEKSI if() UNTUK MENCEGAH CRASH SAAT ELEMENT TIDAK ADA 🔥
 function simpanKop() {
     let b1 = document.getElementById('kopBaris1'); if(b1) localStorage.setItem('kopBaris1', b1.value);
     let b2 = document.getElementById('kopBaris2'); if(b2) localStorage.setItem('kopBaris2', b2.value);
     let b3 = document.getElementById('kopBaris3'); if(b3) localStorage.setItem('kopBaris3', b3.value);
     let b4 = document.getElementById('kopBaris4'); if(b4) localStorage.setItem('kopBaris4', b4.value);   
     Toast.fire({ icon: 'success', title: 'Teks Kop Disimpan!' });
+}
+
+function loadDataKop() {
+    let b1 = document.getElementById('kopBaris1'); if(b1 && localStorage.getItem('kopBaris1')) b1.value = localStorage.getItem('kopBaris1');
+    let b2 = document.getElementById('kopBaris2'); if(b2 && localStorage.getItem('kopBaris2')) b2.value = localStorage.getItem('kopBaris2');
+    let b3 = document.getElementById('kopBaris3'); if(b3 && localStorage.getItem('kopBaris3')) b3.value = localStorage.getItem('kopBaris3');
+    let b4 = document.getElementById('kopBaris4'); if(b4 && localStorage.getItem('kopBaris4')) b4.value = localStorage.getItem('kopBaris4');
+    
+    let l1 = localStorage.getItem('logo1');
+    let p1 = document.getElementById('previewLogo1');
+    if(p1 && l1) { p1.src = l1; p1.style.display = 'block'; }
 }
 
 function prosesLogo(inputElem, keyName) {
@@ -392,17 +405,6 @@ function prosesLogo(inputElem, keyName) {
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-}
-
-function loadDataKop() {
-    let b1 = document.getElementById('kopBaris1'); if(b1 && localStorage.getItem('kopBaris1')) b1.value = localStorage.getItem('kopBaris1');
-    let b2 = document.getElementById('kopBaris2'); if(b2 && localStorage.getItem('kopBaris2')) b2.value = localStorage.getItem('kopBaris2');
-    let b3 = document.getElementById('kopBaris3'); if(b3 && localStorage.getItem('kopBaris3')) b3.value = localStorage.getItem('kopBaris3');
-    let b4 = document.getElementById('kopBaris4'); if(b4 && localStorage.getItem('kopBaris4')) b4.value = localStorage.getItem('kopBaris4');
-    
-    let l1 = localStorage.getItem('logo1');
-    let p1 = document.getElementById('previewLogo1');
-    if(p1 && l1) { p1.src = l1; p1.style.display = 'block'; }
 }
 
 document.addEventListener('DOMContentLoaded', () => { setTimeout(loadDataKop, 500); });

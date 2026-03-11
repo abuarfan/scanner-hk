@@ -33,6 +33,7 @@
             flex: 0 0 50%; width: 50%; min-width: 50%; max-width: 50%; 
             box-sizing: border-box; padding: 30px 25px; 
             display: flex; flex-direction: column; overflow: hidden;
+            position: relative;
         }
 
         /* ================== STYLING AREA MESIN ================== */
@@ -88,6 +89,26 @@
         .uraian-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px; position:relative; z-index:2;}
         .uraian-container { display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
         .garis-uraian { border-bottom: 1px solid #888; height: 26px; width: 100%; position: relative;}
+
+        /* 🔥 EFEK WATERMARK LURUS (TIDAK MIRING) 🔥 */
+        .watermark { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); /* 🔥 Efek rotate(-30deg) dihapus di sini 🔥 */
+            width: 100%; 
+            font-size: 26px; 
+            font-weight: 900; 
+            color: rgba(0, 0, 0, 0.06); 
+            text-transform: uppercase; 
+            white-space: normal; 
+            word-wrap: break-word; 
+            text-align: center; 
+            line-height: 1.4; 
+            pointer-events: none; 
+            z-index: 1; 
+            letter-spacing: 2px; 
+        }
     </style>
 </head>
 <body>
@@ -130,6 +151,8 @@
 
         <div class="area-manusia">
             
+            <div class="watermark" id="cetakQuote"></div>
+
             <div class="kop-surat">
                 <img id="cetakLogo1" class="kop-logo" src="logo1.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="display:block;">
                 <div style="display:none; width: 14mm; height: 14mm; background-color: transparent; border: 1px solid #999; justify-content:center; align-items:center; font-size:10px; flex-shrink: 0; margin-right:15px;">LOGO</div>
@@ -238,11 +261,13 @@
         document.getElementById('wadahSoal3').innerHTML = htmlCol3;
 
         // =========================================================
-        // 4. GARIS URAIAN
+        // 4. GARIS URAIAN (BERSIH TANPA WATERMARK)
         // =========================================================
         const wadahUraian = document.getElementById('wadahUraian');
         let htmlUraian = ''; 
-        for (let i = 1; i <= 21; i++) { htmlUraian += '<div class="garis-uraian"></div>'; }
+        for (let i = 1; i <= 21; i++) { 
+            htmlUraian += '<div class="garis-uraian"></div>'; 
+        }
         wadahUraian.innerHTML = htmlUraian;
 
         // =========================================================
