@@ -1,5 +1,5 @@
 // 🔥 NAIKKAN ANGKA VERSI INI SETIAP KALI UPDATE KODE KE VERCEL 🔥
-const CACHE_NAME = 'ljk-scanner-v6.0'; 
+const CACHE_NAME = 'ljk-scanner-v5.9'; 
 
 const urlsToCache = [
     './',
@@ -58,3 +58,4 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
