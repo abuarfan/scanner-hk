@@ -1,6 +1,7 @@
 // ==================== CAMERA & AUTO-SCAN ====================
 let videoTrack = null;     
 let isSenterNyala = false; 
+let gagalScanCount = 0;
 
 function bersihkanMemoriCV(...mats) {
     mats.forEach(mat => { if (mat && typeof mat.delete === 'function') { try { mat.delete(); } catch(e) {} } });
@@ -62,21 +63,33 @@ function toggleAutoScan() {
     
     if(wadahKamera && wadahKamera.style.display === 'block') {
         btnAmbil.style.display = 'flex';
+        
         if(isAuto) {
-            btnAmbil.innerHTML = "⏳ Auto-Scan Aktif...";
+            gagalScanCount = 0; 
+            
+            // 🔥 TAMPILAN AUTO-SCAN (Elegan, putus-putus, seolah sedang "bekerja") 🔥
+            btnAmbil.innerHTML = "⚡ Memindai Otomatis...";
             btnAmbil.disabled = true;
-            btnAmbil.style.opacity = '0.5';
-            btnAmbil.style.borderColor = 'var(--text-muted)';
-            btnAmbil.style.color = 'var(--text-muted)';
+            btnAmbil.style.backgroundColor = "var(--bg-input)";
+            btnAmbil.style.color = "var(--primary)";
+            btnAmbil.style.border = "2px dashed var(--primary)";
+            btnAmbil.style.boxShadow = "none";
+            btnAmbil.style.opacity = "0.9";
+            
             autoScanTimer = setInterval(ambilFotoOtomatis, 1000); 
         } else {
-            btnAmbil.innerHTML = "📸 JEPRET MANUAL";
+            // 🔥 TAMPILAN MANUAL (Solid, tegas, memancing untuk diklik) 🔥
+            btnAmbil.innerHTML = "📸 Jepret Manual";
             btnAmbil.disabled = false;
-            btnAmbil.style.opacity = '1';
-            btnAmbil.style.borderColor = 'var(--primary)';
-            btnAmbil.style.color = 'var(--primary)';
+            btnAmbil.style.backgroundColor = "var(--primary)";
+            btnAmbil.style.color = "white";
+            btnAmbil.style.border = "none";
+            btnAmbil.style.boxShadow = "0 4px 12px rgba(0, 122, 255, 0.3)";
+            btnAmbil.style.opacity = "1";
         }
-    } else { btnAmbil.style.display = 'none'; }
+    } else { 
+        btnAmbil.style.display = 'none'; 
+    }
 }
 
 function ambilFotoOtomatis() {
@@ -84,7 +97,28 @@ function ambilFotoOtomatis() {
         const ctx = canvasElement.getContext('2d', { willReadFrequently: true });
         canvasElement.width = videoElement.videoWidth; canvasElement.height = videoElement.videoHeight;
         ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-        prosesDeteksiKertas(true);
+        
+        // 🔥 PERBAIKAN: Kirim kode 'auto', bukan true. (Bip merah akan diam!) 🔥
+        let hasil = prosesDeteksiKertas('auto'); 
+        
+        // 🔥 FITUR AUTO-STOP SETELAH 5X GAGAL 🔥
+        if (hasil === 'failed') {
+            gagalScanCount++;
+            if (gagalScanCount >= 7) {
+                matikanKameraUI(); // Matikan hardware kamera
+                document.getElementById('cbAutoScan').checked = false; // Matikan saklar UI
+                toggleAutoScan(); // Kembalikan tombol ke mode Jepret Manual
+                
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Kamera Ditutup', 
+                    text: 'Auto-Scan dihentikan karena tidak menemukan LJK 7 kali berturut-turut. Pastikan kertas lurus dan tidak terhalang bayangan.' 
+                });
+                gagalScanCount = 0;
+            }
+        } else {
+            gagalScanCount = 0; // Reset hitungan menjadi 0 jika LJK berhasil discan
+        }
     }
 }
 
