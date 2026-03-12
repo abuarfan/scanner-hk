@@ -362,13 +362,16 @@
             <div id="set-siswa" class="sub-tab-content">
                 <div class="card" style="margin-bottom: 40px;">
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                        <label style="margin:0; font-weight:bold; font-size:14px;">Mode Sumber Data</label>
-                        <select id="modeSumberData" class="input-css" style="width: auto; margin:0; padding: 6px 35px 6px 12px; font-size:12px; background-color: var(--bg-card);" onchange="ubahModeSumberData()">
-                            <option value="supabase">1. Data Server</option>
-                            <option value="excel">2. Upload Excel</option>
-                            <option value="manual">3. Ketik Manual</option>
-                        </select>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                        <label style="margin:0; font-weight:bold; font-size:14px; flex: 1;">Mode Sumber Data</label>
+                        
+                        <div style="flex: 1; width: 100%; margin-top: -5px;">
+                            <select id="modeSumberData" class="input-css" style="margin:0; font-size:12px;" onchange="ubahModeSumberData()">
+                                <option value="supabase">1. Data Server</option>
+                                <option value="excel">2. Upload Excel</option>
+                                <option value="manual">3. Ketik Manual</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div id="panelSupabase">
