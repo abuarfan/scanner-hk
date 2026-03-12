@@ -1,12 +1,13 @@
 // ==================== VARIABLE GLOBAL ====================
 const Toast = Swal.mixin({ 
     toast: true, 
-    position: 'bottom', 
+    position: 'top', // 🔥 Dipindah ke atas agar turun layaknya notifikasi elegan
     showConfirmButton: false, 
     timer: 2500, 
-    timerProgressBar: true,
-    customClass: { container: 'mb-navbar' }
+    timerProgressBar: true
+    // 🔥 customClass dihapus agar ukurannya tidak bertabrakan dengan CSS Navbar
 });
+
 
 let videoElement;
 let canvasElement;

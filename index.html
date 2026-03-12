@@ -183,10 +183,12 @@
 
         /* FIX 1: Memaksa wadah baris agar meratakan semua anaknya tepat di tengah */
         #panelSupabase > div,
-        .profil-container,
-        div[style*="display: flex"] {
+        .profil-container {
             align-items: center !important;
         }
+        
+        /* Catatan: Selektor 'div[style*="display: flex"]' sudah dihapus karena merusak ikon SweetAlert */
+
 
         /* FIX 2: Menghapus margin gaib pada Dropdown agar tidak melorot */
         .custom-select-wrapper {
@@ -324,16 +326,17 @@
                 
                 </div>
                 
-                <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 15px;">
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
             
-                    <button id="btnSenter" class="wa-btn" style="flex: 0 0 55px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border); font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="toggleSenter()">🔦</button>
+                        <button id="btnSenter" style="flex: 0 0 50px; height: 50px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border); font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-main); padding: 0; box-sizing: border-box;" onclick="toggleSenter()">🔦</button>
+            
+                        <button id="btnNyalakan" class="btn-utama" style="flex: 1; height: 50px; border-radius: 12px; margin: 0; display: flex; justify-content: center; align-items: center; box-sizing: border-box;" onclick="mulaiKamera()">📸 Nyalakan Kamera</button>
+                        <button id="btnAmbil" class="btn-utama" style="flex: 1; height: 50px; border-radius: 12px; margin: 0; display: none; justify-content: center; align-items: center; box-sizing: border-box;" onclick="ambilFotoManual()">📸 Jepret Manual</button>
+            
+                        <button style="flex: 0 0 50px; height: 50px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border); font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 0; box-sizing: border-box;" onclick="document.getElementById('inputFoto').click()">📁</button>
+                        
+                    </div>
 
-                    <button id="btnNyalakan" class="btn-utama" style="flex: 1; border-radius: 12px;" onclick="mulaiKamera()">📸 Nyalakan Kamera</button>
-                    <button id="btnAmbil" class="btn-utama" style="flex: 1; border-radius: 12px; display: none;" onclick="ambilFotoManual()">📸 Jepret Manual</button>
-
-                    <button class="wa-btn" style="flex: 0 0 55px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border); font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="document.getElementById('inputFoto').click()">📁</button>
-                    
-                </div>
                 <input type="file" id="inputFoto" accept="image/*" multiple style="display: none;">
                 
                 <canvas id="kanvasFoto"></canvas>
