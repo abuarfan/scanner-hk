@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master LJK - Generator & ZIP Downloader</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        @media print {
+            @page { size: A4 landscape; margin: 0; }
+            body { background-color: white !important; margin: 0; padding: 0 !important; display: block !important;}
+            .kertas { box-shadow: none !important; margin: 0 !important; page-break-after: always; }
+            .kertas:last-child { page-break-after: auto; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            /* Sembunyikan panel tombol saat di-print */
+            #panel-kontrol { display: none !important; } 
+        }
+        body { background-color: #555; display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 20px; font-family: Arial, sans-serif; padding-top: 80px;}
+        
+        /* 🚨 PANEL KONTROL MELAYANG 🚨 */
+        #panel-kontrol {
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex; gap: 15px; z-index: 9999; border: 1px solid #ddd;
+        }
+        .btn-panel {
+            padding: 10px 20px; border: none; border-radius: 25px; font-weight: bold; font-size: 14px;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-print { background: #333; color: white; }
+        .btn-zip { background: #007AFF; color: white; }
+        .btn-panel:hover { opacity: 0.8; transform: translateY(-2px); }
+        .btn-panel:disabled { background: #ccc !important; cursor: not-allowed; transform: none; }
+
+        /* 🚨 GEMBOK KERTAS MUTLAK A4 🚨 */
+        .kertas { 
+            width: 297mm !important; min-width: 297mm !important; max-width: 297mm !important; 
+            height: 210mm !important; min-height: 210mm !important; max-height: 210mm !important; 
+            background-color: white; box-sizing: border-box; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.5); display: flex; overflow: hidden;
+            position: relative;
+            flex-shrink: 0 !important; /* 🔥 ANTI-MENGKERUT DI LAYAR KECIL 🔥 */
+        }
+        
+        /* 🚨 AREA 50:50 🚨 */
+        .area-mesin { flex: 0 0 50%; width: 50%; padding: 60px 20px 48px 20px; border-right: 2px dashed #999; display: flex; flex-direction: column; position: relative;}
+        .area-manusia { flex: 0 0 50%; width: 50%; padding: 30px 25px; display: flex; flex-direction: column; position: relative;}
+
+        /* STYLING LJK STANDAR */
+        .penanda { width: 30px; height: 30px; background-color: black; position: absolute; }
+        .kiri-atas { top: 20px; left: 15px; } .kanan-atas { top: 20px; right: 15px; } 
+        .kiri-bawah { bottom: 20px; left: 15px; } .kanan-bawah { bottom: 20px; right: 15px; }
+        .penanda-orientasi { width: 30px; height: 10px; background-color: black; position: absolute; top: 60px; left: 15px; }
+        .mesin-wrapper { display: flex; flex-direction: column; height: 100%; justify-content: flex-end; }
+        .petunjuk-box { text-align: center; margin-bottom: 18px; }
+        .petunjuk-title { font-size: 13.5px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .petunjuk-icon { display: flex; justify-content: center; gap: 18px; font-size: 10.5px; font-weight: bold; }
+        .petunjuk-item { display: flex; align-items: center; gap: 5px; }
+        .pg-wrapper { width: max-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; margin-bottom: 5px; }
+        .pg-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px;}
+        .mesin-body { display: flex; justify-content: center; gap: 20px; } 
+        .kolom-mesin { display: flex; flex-direction: column; width: max-content; }
+        .row-grid { height: 23px; display: flex; align-items: center; } 
+        .nomor { width: 22px; text-align: right; margin-right: 8px; font-size: 11px; font-weight: bold; }
+        .opsi-group { display: flex; gap: 7px; } 
+        .opsi { width: 16px; height: 16px; border: 1px solid #aaa; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 9px; color: #999; box-sizing: border-box; font-weight: 600;}
+        .id-box { width: 16px; height: 16px; border: 1.5px solid black; box-sizing: border-box; }
+        .contoh-benar { background-color: black !important; color: black !important; border-color: black !important; }
+        .contoh-silang { position: relative; color: transparent !important; border-color: black !important; }
+        .contoh-silang::after { content: 'X'; position: absolute; color: black; font-size: 14px; font-weight: bold;}
+        .contoh-centang { position: relative; color: transparent !important; border-color: black !important; }
+        .contoh-centang::after { content: '✓'; position: absolute; color: black; font-size: 12px; font-weight: bold;}
+        .kop-surat { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; }
+        .kop-teks { flex-grow: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .kop-teks h3 { margin: 3px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
+        .kop-teks h4 { margin: 3px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
+        .kop-teks h1 { margin: 3px; font-size: 11pt; font-weight: bold; text-transform: uppercase; color: #111;}
+        .kop-teks p { margin: 3px; font-size: 7pt; color: #111; }
+        .identitas-box { border: 2px solid black; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fafafa;}
+        .identitas-baris { display: flex; font-size: 12px; font-weight: bold; margin-bottom: 15px; align-items: flex-end;}
+        .identitas-baris:last-child { margin-bottom: 0; }
+        .identitas-label { width: 55px; } 
+        .garis { border-bottom: 1px dashed black; flex-grow: 1; margin-left: 8px; height: 16px; position: relative;}
+        .uraian-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px; position:relative; z-index:2;}
+        .uraian-container { display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .garis-uraian { border-bottom: 1px solid #888; height: 26px; width: 100%; position: relative;}
+    </style>
+</head>
+<body>
+
+    <div id="panel-kontrol">
+        <button class="btn-panel btn-print" onclick="window.print()">🖨️ Cetak PDF</button>
+        <button class="btn-panel btn-zip" id="btnDownloadZip" onclick="prosesDownloadZip()">📦 Download ZIP Gambar</button>
+    </div>
+
+    <div id="wadahKertas" style="display:flex; flex-direction:column; gap:30px; align-items:center; min-width: max-content;">
+        </div>
+
+    <script>
+        const abjad = ['A','B','C','D','E'];
+        const wadahKertas = document.getElementById('wadahKertas');
+
+        function buatKertas(siswa) {
+            let idString = String(siswa.id).padStart(5, '0').slice(-5);
+            let jawabanRandom = [];
+            for (let x = 0; x < 60; x++) { jawabanRandom.push(Math.floor(Math.random() * 5)); }
+
+            let htmlCol1 = '<div style="position:relative; z-index:2;">';
+            htmlCol1 += '<div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: flex-end; padding-bottom:2px;"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px;">NO. PESERTA</span></div><div class="row-grid"></div>';
+            htmlCol1 += '<div class="row-grid"><div class="nomor"></div><div class="opsi-group" style="transform: translateY(-8px);">';
+            for(let j=0; j<5; j++) { htmlCol1 += `<div class="id-box" style="text-align:center; font-size:12px; font-weight:bold;">${idString[j]}</div>`; }
+            htmlCol1 += '</div></div>';
+
+            for(let digit=0; digit<=9; digit++){
+                htmlCol1 += '<div class="row-grid"><div class="nomor"></div><div class="opsi-group">';
+                for(let col=0; col<5; col++){ 
+                    let kelasHitam = (idString[col] == digit) ? 'contoh-benar' : '';
+                    htmlCol1 += `<div class="opsi ${kelasHitam}">${digit}</div>`; 
+                }
+                htmlCol1 += '</div></div>';
+            }
+            
+            htmlCol1 += '<div class="row-grid"></div><div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: center; transform: translateY(-11px);"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px;">NO. SOAL</span></div>';
+
+            for(let i=1; i<=10; i++){
+                htmlCol1 += `<div class="row-grid"><div class="nomor">${i}.</div><div class="opsi-group">`;
+                for(let j=0; j<5; j++){ 
+                    let kelasHitam = (jawabanRandom[i-1] === j) ? 'contoh-benar' : '';
+                    htmlCol1 += `<div class="opsi ${kelasHitam}">${abjad[j]}</div>`; 
+                }
+                htmlCol1 += `</div></div>`;
+            }
+            htmlCol1 += '</div>';
+
+            let htmlCol2 = '';
+            for(let i=11; i<=35; i++){
+                htmlCol2 += `<div class="row-grid"><div class="nomor">${i}.</div><div class="opsi-group">`;
+                for(let j=0; j<5; j++) {
+                    let kelasHitam = (jawabanRandom[i-1] === j) ? 'contoh-benar' : '';
+                    htmlCol2 += `<div class="opsi ${kelasHitam}">${abjad[j]}</div>`;
+                }
+                htmlCol2 += `</div></div>`;
+            }
+
+            let htmlCol3 = '';
+            for(let i=36; i<=60; i++){
+                htmlCol3 += `<div class="row-grid"><div class="nomor">${i}.</div><div class="opsi-group">`;
+                for(let j=0; j<5; j++) {
+                    let kelasHitam = (jawabanRandom[i-1] === j) ? 'contoh-benar' : '';
+                    htmlCol3 += `<div class="opsi ${kelasHitam}">${abjad[j]}</div>`;
+                }
+                htmlCol3 += `</div></div>`;
+            }
+
+            let htmlUraian = ''; for (let i = 1; i <= 21; i++) { htmlUraian += '<div class="garis-uraian"></div>'; }
+
+            // 🔥 Menambahkan data-nama untuk nama file JPG nanti 🔥
+            let templateKertas = `
+            <div class="kertas" data-nama="${idString}_${siswa.nama.replace(/[^a-zA-Z0-9]/g, '_')}">
+                <div class="area-mesin">
+                    <div class="penanda kiri-atas"></div><div class="penanda-orientasi"></div>
+                    <div class="penanda kanan-atas"></div><div class="penanda kiri-bawah"></div>
+                    <div class="penanda kanan-bawah"></div>
+                    <div class="mesin-wrapper">
+                        <div>
+                            <div class="petunjuk-box">
+                                <div class="petunjuk-title">LEMBAR JAWABAN KOMPUTER</div>
+                                <div class="petunjuk-icon">
+                                    <div class="petunjuk-item">BENAR: <div class="opsi contoh-benar">A</div></div>
+                                    <div class="petunjuk-item">SALAH: <div class="opsi contoh-silang" style="width:16px; height:16px;">B</div></div>
+                                    <div class="petunjuk-item">SALAH: <div class="opsi contoh-centang" style="width:16px; height:16px;">C</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pg-wrapper">
+                            <div class="pg-title">JAWABAN PILIHAN GANDA</div>
+                            <div class="mesin-body">
+                                <div class="kolom-mesin">${htmlCol1}</div>
+                                <div class="kolom-mesin">${htmlCol2}</div>
+                                <div class="kolom-mesin">${htmlCol3}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="area-manusia">
+                    <div class="kop-surat">
+                        <div style="width: 19mm; height: 19mm; background-color: transparent; border: 1px solid #999; display: flex; justify-content:center; align-items:center; font-size:10px; flex-shrink: 0; margin-right:15px; border-radius:4px;">LOGO</div>
+                        <div class="kop-teks">
+                            <h3>PENILAIAN AKHIR TAHUN SEMESTER GENAP</h3>
+                            <h4>TAHUN AJARAN 2025/2026</h4>
+                            <h1>SIMULASI LJK DATA TESTING</h1>
+                            <p>Jl. Raya Manis Kidul Kec. Jalaksana Kab. Kuningan Prov. Jawa Barat</p>
+                        </div>
+                    </div>
+
+                    <div class="identitas-box">
+                        <div class="identitas-baris">
+                            <div class="identitas-label">NAMA</div><span>:</span>
+                            <div class="garis" style="border-bottom:none; font-size:14px; padding-left:5px;">${siswa.nama}</div>
+                        </div>
+                        <div class="identitas-baris" style="margin-bottom: 0;">
+                            <div style="display: flex; flex: 1; align-items: flex-end;">
+                                <div class="identitas-label">KELAS</div><span>:</span>
+                                <div class="garis" style="border-bottom:none; padding-left:5px;">--</div>
+                            </div>
+                            <div style="display: flex; flex: 1.2; align-items: flex-end; margin-left: 20px;">
+                                <div style="width: 50px; font-weight: bold; font-size: 12px;">NIS</div><span>:</span>
+                                <div class="garis" style="border-bottom:none; font-size:14px; padding-left:5px;">${idString}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="uraian-title">JAWABAN URAIAN</div>
+                    <div class="uraian-container">${htmlUraian}</div>
+                </div>
+            </div>`;
+            return templateKertas;
+        }
+
+        // ==================== GENERATOR UTAMA ====================
+        window.onload = function() {
+            let mode = localStorage.getItem('modeSumberData') || 'supabase';
+            let dataSiswa = [];
+            
+            if (mode === 'manual') {
+                let textManual = localStorage.getItem('dbSiswaTxt') || '';
+                let lines = textManual.split('\n');
+                lines.forEach(line => {
+                    let parts = line.split('=');
+                    if (parts.length >= 2) dataSiswa.push({ id: parts[0].trim(), nama: parts[1].trim() });
+                });
+            } else {
+                let rawData = mode === 'supabase' ? localStorage.getItem('dbRawSupabase') : localStorage.getItem('dbRawExcel');
+                let dbParsed = rawData ? JSON.parse(rawData) : {};
+                for (let nis in dbParsed) {
+                    dataSiswa.push({ id: nis, nama: dbParsed[nis] });
+                }
+            }
+
+            if (dataSiswa.length === 0) {
+                wadahKertas.innerHTML = `<h2 style='color:white; text-align:center; margin-top:50px;'>⚠️ Data Kosong!<br><small>Silakan buka aplikasi LJK Scanner terlebih dahulu dan tarik data dari Supabase.</small></h2>`;
+                document.getElementById('panel-kontrol').style.display = 'none';
+                return;
+            }
+
+            dataSiswa = dataSiswa.slice(0, 55);
+            let seluruhKertas = '';
+            dataSiswa.forEach(siswa => { seluruhKertas += buatKertas(siswa); });
+            wadahKertas.innerHTML = seluruhKertas;
+            
+            // Auto Print dimatikan, diganti tombol agar bisa pilih Print atau ZIP
+        };
+
+        // ==================== MESIN ZIP MAKER ====================
+        async function prosesDownloadZip() {
+            const btn = document.getElementById('btnDownloadZip');
+            const kertasArray = document.querySelectorAll('.kertas');
+            const zip = new JSZip();
+            
+            btn.disabled = true;
+            
+            for (let i = 0; i < kertasArray.length; i++) {
+                btn.innerHTML = `⏳ Memproses Gambar (${i + 1}/${kertasArray.length})...`;
+                
+                let elemen = kertasArray[i];
+                let namaFile = elemen.getAttribute('data-nama') || `LJK_Simulasi_${i+1}`;
+                
+                // Screenshot elemen HTML menjadi Canvas (scale 1.5 untuk resolusi cukup baik tapi ukuran file kecil)
+                let canvas = await html2canvas(elemen, { scale: 1.5, useCORS: true });
+                
+                // Konversi Canvas ke Base64 JPG
+                let imgData = canvas.toDataURL("image/jpeg", 0.85).split(',')[1];
+                
+                // Masukkan ke dalam arsip ZIP
+                zip.file(`${namaFile}.jpg`, imgData, {base64: true});
+            }
+
+            btn.innerHTML = `📦 Sedang Mengemas ZIP...`;
+
+            // Proses Generate ZIP
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                // Memicu download otomatis
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "LJK_Simulasi_Otomatis.zip";
+                link.click();
+                
+                btn.innerHTML = `✅ Berhasil Diunduh!`;
+                setTimeout(() => {
+                    btn.innerHTML = `📦 Download ZIP Gambar`;
+                    btn.disabled = false;
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>

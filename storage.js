@@ -226,8 +226,8 @@ function hitungNilaiAkhir(rincian, totalSoalAktif = 60) {
 
     let benar = 0; let salah = 0;
     rincian.forEach(r => {
-        if (r.status === 'BENAR') benar++;
-        else if (r.status === 'SALAH' || r.status === 'KOSONG' || r.status === 'GANDA') salah++;
+        if (r.status === 'Benar') benar++;
+        else if (r.status === 'Salah' || r.status === 'Kosong' || r.status === 'Ganda') salah++;
     });
 
     if (tipePenilaian === 'utbk') {
@@ -239,7 +239,7 @@ function hitungNilaiAkhir(rincian, totalSoalAktif = 60) {
         let totalSkor = 0;
         
         rincian.forEach((r, idx) => {
-            if (r.status === 'BENAR') {
+            if (r.status === 'Benar') {
                 let bbt = isSingle ? arrBobot[0] : (arrBobot[idx] !== undefined ? arrBobot[idx] : 1);
                 totalSkor += bbt;
             }
@@ -383,7 +383,7 @@ function restoreDataFromObject(data, mode = 'replace') {
     riwayatData.forEach(siswa => {
         if (siswa.rincian) {
             siswa.rincian.forEach((item, idx) => {
-                if ((item.status === "SALAH" || item.status === "KOSONG" || item.status === "GANDA") && idx < 60) {
+                if ((item.status === "Salah" || item.status === "Kosong" || item.status === "Ganda") && idx < 60) {
                     statistikSalah[idx]++;
                 }
             });
@@ -408,7 +408,7 @@ function simpanRiwayat() {
     riwayatData.forEach(siswa => {
         if(siswa.rincian) {
             siswa.rincian.forEach((item, idx) => {
-                if (item.status === "SALAH" || item.status === "KOSONG" || item.status === "GANDA") {
+                if (item.status === "Salah" || item.status === "Kosong" || item.status === "Ganda") {
                     if(idx < 60) statistikSalah[idx]++;
                 }
             });
@@ -475,13 +475,13 @@ function simpanPengaturan(isSilent = false) {
                     item.status = "DIABAIKAN";
                     item.kunci = !tk ? "-" : "X";
                 } else if (tk.includes('*')) {
-                    item.status = "BENAR"; item.kunci = "BONUS"; jBenar++;
+                    item.status = "Benar"; item.kunci = "BONUS"; jBenar++;
                 } else {
                     item.kunci = tk.join('/');
-                    if (jwbSiswa === "Kosong") { item.status = "KOSONG"; jKosong++; } 
-                    else if (jwbSiswa === "GANDA") { item.status = "GANDA"; jGanda++; } 
-                    else if (tk.includes(jwbSiswa)) { item.status = "BENAR"; jBenar++; } 
-                    else { item.status = "SALAH"; jSalah++; }
+                    if (jwbSiswa === "Kosong") { item.status = "Kosong"; jKosong++; } 
+                    else if (jwbSiswa === "Ganda") { item.status = "Ganda"; jGanda++; } 
+                    else if (tk.includes(jwbSiswa)) { item.status = "Benar"; jBenar++; } 
+                    else { item.status = "Salah"; jSalah++; }
                 }
             });
             

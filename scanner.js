@@ -310,7 +310,7 @@ function prosesDeteksiKertas(scanMode = 'manual') {
 
             for(let i=0; i<60; i++) { 
                 let ansData = hasilPGFinalRaw[i]; let arrHuruf = ansData.map(a => a.huruf).sort();
-                let jawabanTeks = arrHuruf.length === 0 ? "Kosong" : (arrHuruf.length > 1 ? "GANDA" : arrHuruf.join('')); 
+                let jawabanTeks = arrHuruf.length === 0 ? "Kosong" : (arrHuruf.length > 1 ? "Ganda" : arrHuruf.join('')); 
                 
                 let targetToken = i < KUNCI_TOKENS.length ? KUNCI_TOKENS[i] : null;
                 let warnaLingkaran = warnaBenarCV; 
@@ -321,17 +321,17 @@ function prosesDeteksiKertas(scanMode = 'manual') {
                     warnaLingkaran = warnaAbaikanCV; status = "DIABAIKAN"; jwbBenarTeks = !targetToken ? "-" : "X";
                 } 
                 else if (targetToken.includes('*')) {
-                    warnaLingkaran = warnaBenarCV; status = "BENAR"; jwbBenarTeks = "BONUS"; jumlahBenar++;
+                    warnaLingkaran = warnaBenarCV; status = "Benar"; jwbBenarTeks = "BONUS"; jumlahBenar++;
                 } 
                 else {
                     if (arrHuruf.length === 0) {
-                        warnaLingkaran = warnaSalahCV; status = "KOSONG"; jumlahKosong++;
+                        warnaLingkaran = warnaSalahCV; status = "Kosong"; jumlahKosong++;
                     } else if (arrHuruf.length > 1) {
-                        warnaLingkaran = warnaOrange; status = "GANDA"; jumlahGanda++;
+                        warnaLingkaran = warnaOrange; status = "Ganda"; jumlahGanda++;
                     } else if (targetToken.includes(jawabanTeks)) {
-                        warnaLingkaran = warnaBenarCV; status = "BENAR"; jumlahBenar++;
+                        warnaLingkaran = warnaBenarCV; status = "Benar"; jumlahBenar++;
                     } else {
-                        warnaLingkaran = warnaSalahCV; status = "SALAH"; jumlahSalah++;
+                        warnaLingkaran = warnaSalahCV; status = "Salah"; jumlahSalah++;
                     }
                 }
                 
@@ -373,7 +373,7 @@ function prosesDeteksiKertas(scanMode = 'manual') {
                 </div>
             </div>`;
             
-            bacaNilaiAI(namaSiswa, nilaiAkhir);
+            bacaNilaiAI(namaSiswa, nilaiAkhir, scanMode);
             
             // 🔥 SCROLL HORIZONTAL YANG FIX (Menggunakan TBODY agar tidak hilang) 🔥
             htmlHasil += `

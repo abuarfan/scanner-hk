@@ -81,12 +81,19 @@ function toggleInputBobot() {
     if (wadah) { wadah.style.display = (val === 'bobot') ? 'block' : 'none'; }
 }
 
-function bacaNilaiAI(nama, nilai) {
+function bacaNilaiAI(nama, nilai, modeScan = 'manual') {
     let isSuaraAktif = document.getElementById('cbSuaraAI').checked;
     if (!isSuaraAktif || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+    
+    // 🔥 HANYA potong suara sebelumnya jika menggunakan Kamera. 
+    // Jika dari Upload, biarkan masuk antrean (queued) agar terbaca semua.
+    if (modeScan !== 'upload') {
+        window.speechSynthesis.cancel();
+    }
+    
     let speech = new SpeechSynthesisUtterance(`${nama}. Nilai: ${nilai}.`);
-    speech.lang = 'id-ID'; speech.rate = 1.0; window.speechSynthesis.speak(speech);
+    speech.lang = 'id-ID'; speech.rate = 1.0; 
+    window.speechSynthesis.speak(speech);
 }
 
 function putarSuara(isSukses) {
@@ -138,13 +145,14 @@ function updateActionButtons() {
     });
 }
 
+// 🔥 UPDATE KAPITALISASI: Benar, Salah, Ganda, Kosong 🔥
 function buatBarisTabel(data) {
     if (data.status === "DIABAIKAN") {
         return `<tr style="border-bottom:1px solid var(--border); opacity:0.4;"><td style="padding:4px 0;">${data.nomor}.</td><td style="color:var(--text-muted); text-align:center;">- Diabaikan -</td></tr>`;
     }
-    let warna = data.status === "BENAR" ? "var(--success)" : (data.status === "SALAH" ? "var(--danger)" : "var(--warning)");
-    let ikon = data.status === "BENAR" ? "✔️" : (data.status === "SALAH" ? "❌" : "⚠️");
-    let teks = data.status === "BENAR" ? `<b>${data.jawaban}</b>` : `<s>${data.jawaban}</s> (<span style="color:var(--primary)">${data.kunci}</span>)`;
+    let warna = data.status === "Benar" ? "var(--success)" : (data.status === "Salah" ? "var(--danger)" : "var(--warning)");
+    let ikon = data.status === "Benar" ? "✔️" : (data.status === "Salah" ? "❌" : "⚠️");
+    let teks = data.status === "Benar" ? `<b>${data.jawaban}</b>` : `<s>${data.jawaban}</s> (<span style="color:var(--primary)">${data.kunci}</span>)`;
     return `<tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 0; color:var(--text-muted);">${data.nomor}.</td><td style="color:${warna};">${teks} ${ikon}</td></tr>`;
 }
 
@@ -212,7 +220,7 @@ async function koreksiManual(idSiswa) {
     let opsiSoal = '';
     d.rincian.forEach(r => {
         if(r.status === "DIABAIKAN") return; 
-        let info = r.status === "BENAR" ? "✔️ Benar" : (r.status === "GANDA" ? `⚠️ Ganda (${r.jawaban})` : `❌ (Jawab: ${r.jawaban})`);
+        let info = r.status === "Benar" ? "✔️ Benar" : (r.status === "Ganda" ? `⚠️ Ganda (${r.jawaban})` : `❌ (Jawab: ${r.jawaban})`);
         opsiSoal += `<option value="${r.nomor}">No. ${r.nomor} - ${info}</option>`;
     });
 
@@ -225,7 +233,7 @@ async function koreksiManual(idSiswa) {
                 <select id="swal-input1" class="input-css" style="margin-bottom:15px; margin-top:5px;">${opsiSoal}</select>
                 <label style="font-weight:bold; color:var(--text-muted);">Ubah Jawaban Menjadi:</label>
                 <select id="swal-input2" class="input-css" style="margin-top:5px;">
-                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="Kosong">KOSONG</option><option value="GANDA">GANDA</option>
+                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="Kosong">KOSONG</option><option value="Ganda">GANDA</option>
                 </select>
             </div>`,
         focusConfirm: false, showCancelButton: true, showDenyButton: true, 
@@ -246,11 +254,11 @@ async function koreksiManual(idSiswa) {
             d.rincian.forEach((item, idx) => {
                 let tk = idx < kunciTokens.length ? kunciTokens[idx] : null;
                 if (!tk || tk.includes('X')) { item.status = "DIABAIKAN"; } 
-                else if (tk.includes('*')) { jBenar++; item.status = "BENAR"; } 
-                else if (item.jawaban === "Kosong") { jKosong++; item.status = "KOSONG"; } 
-                else if (item.jawaban === "GANDA") { jGanda++; item.status = "GANDA"; } 
-                else if (tk.includes(item.jawaban)) { jBenar++; item.status = "BENAR"; } 
-                else { jSalah++; item.status = "SALAH"; }
+                else if (tk.includes('*')) { jBenar++; item.status = "Benar"; } 
+                else if (item.jawaban === "Kosong") { jKosong++; item.status = "Kosong"; } 
+                else if (item.jawaban === "Ganda") { jGanda++; item.status = "Ganda"; } 
+                else if (tk.includes(item.jawaban)) { jBenar++; item.status = "Benar"; } 
+                else { jSalah++; item.status = "Salah"; }
             });
             d.benar = jBenar; d.salah = jSalah; d.kosong = jKosong; d.ganda = jGanda;
             d.nilai = hitungNilaiAkhir(d.rincian, totalAktif);
