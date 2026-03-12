@@ -253,6 +253,11 @@
                             <button class="wa-btn" style="background: var(--primary); font-size:14px;" id="btnDownloadExcel" onclick="downloadExcel()">⬇️ Excel</button>
                         </div>
                     </div>
+                    
+                    <div style="padding: 8px 15px; background: var(--bg-body); font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); text-align: center;" id="infoSistemPenilaian">
+                        Skor dihitung berdasarkan: <b>Jumlah Benar (Skor Mentah)</b>
+                    </div>
+
                     <div class="table-container">
                         <table id="tabelRiwayat"></table>
                     </div>
@@ -314,8 +319,8 @@
                         <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
                             <option value="benar" selected>Jumlah Benar (Skor Mentah)</option>
                             <option value="standar">Persentase Standar (0 - 100)</option>
-                            <option value="utbk">Try Out UTBK (+4, -1, Kosong 0)</option>
-                            <option value="bobot">Berdasarkan Bobot (Custom)</option>
+                            <option value="utbk">Try Out UTBK (+4, -1, 0)</option>
+                            <option value="bobot">Bobot Soal (Custom)</option>
                         </select>
                     </div>
                     

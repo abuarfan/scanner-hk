@@ -442,8 +442,15 @@ function simpanPengaturan(isSilent = false) {
     localStorage.setItem('namaMapelLJK', document.getElementById('pilihProfil').value);
     localStorage.setItem('kunciLJK', kunciStr);
     localStorage.setItem('dbSiswaTxt', document.getElementById('inputDBSiswa').value);
-    let tipePenilaian = document.getElementById('sistemPenilaian').value;
+    let selPenilaian = document.getElementById('sistemPenilaian');
+    let tipePenilaian = selPenilaian.value;
     localStorage.setItem('sistemPenilaian', tipePenilaian);
+    
+    let elInfoSistem = document.getElementById('infoSistemPenilaian');
+    if (elInfoSistem) {
+        let namaSistem = selPenilaian.options[selPenilaian.selectedIndex].text;
+        elInfoSistem.innerHTML = `Skor dihitung berdasarkan: <b style="color:var(--primary);">${namaSistem}</b>`;
+    }
     localStorage.setItem('bobotLJK', document.getElementById('inputBobot').value);
     localStorage.setItem('kkmLJK', document.getElementById('inputKKM').value);
     localStorage.setItem('suaraAILJK', document.getElementById('cbSuaraAI').checked);
