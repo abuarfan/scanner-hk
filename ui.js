@@ -232,8 +232,12 @@ async function koreksiManual(idSiswa) {
 
     const result = await Swal.fire({
         title: `Koreksi: ${d.nama}`,
-        // 🔥 Tambahkan overflow:visible agar menu dropdown tidak terpotong popup 🔥
-        html: `<div style="text-align: left; font-size: 14px; overflow: visible; padding-bottom: 20px;">
+        // 🔥 MANTRA ANTI-SCROLL & PENAMBAH TINGGI BOX 🔥
+        // 1. Tag <style> ini memaksa SweetAlert untuk tidak memotong menu yang meluber.
+        // 2. padding-bottom: 240px; secara fisik menambah tinggi kotak putihnya.
+        html: `
+            <style>.swal2-popup, .swal2-html-container { overflow: visible !important; }</style>
+            <div style="text-align: left; font-size: 14px; overflow: visible; padding-bottom: 240px;">
                 <label style="font-weight:bold; color:var(--text-muted); display:block; margin-bottom:8px; margin-left:2px;">Pilih Nomor Soal:</label>
                 <select id="swal-input1" style="width: 100%; margin-bottom:20px;">${opsiSoal}</select>
                 
@@ -251,7 +255,6 @@ async function koreksiManual(idSiswa) {
         confirmButtonColor: 'var(--success)', 
         denyButtonColor: 'var(--danger)',
         
-        // 🔥 MANTRA SAKTI: Panggil Custom Dropdown saat Popup Terbuka! 🔥
         didOpen: () => {
             if(typeof sulapMenjadiCustomDropdown === 'function') {
                 sulapMenjadiCustomDropdown('swal-input1');
