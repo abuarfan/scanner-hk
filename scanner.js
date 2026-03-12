@@ -111,7 +111,7 @@ function ambilFotoOtomatis() {
                 Swal.fire({ 
                     icon: 'warning', 
                     title: 'Kamera Ditutup', 
-                    text: 'Auto-Scan dihentikan karena tidak menemukan LJK 7 kali berturut-turut. Pastikan kertas lurus dan tidak terhalang bayangan.' 
+                    text: 'Auto-Scan dihentikan karena LJK tidak terbaca. Pastikan 4 kotak hitam di LJK masuk kedalam bingkai.' 
                 });
                 gagalScanCount = 0;
             }
