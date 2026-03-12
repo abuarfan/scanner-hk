@@ -1,3 +1,5 @@
+// Variabel global penyimpan grafik agar tidak menumpuk saat tab diganti
+let grafikKelulusan = null;
 // ==================== ANALISIS BUTIR SOAL & DAYA PEMBEDA ====================
 function tampilkanStatistik() {
     let wadah = document.getElementById('wadahStatistik');
@@ -29,30 +31,55 @@ function tampilkanStatistik() {
     let persenLulus = Math.round((jmlLulus / totalSiswa) * 100);
     let persenRemedial = Math.round((jmlRemedial / totalSiswa) * 100);
 
+    // 🔥 UI POLISH: Desain Ringkasan dengan Grafik Donat 🔥
     let htmlStat = `
     <div class="card" style="padding: 15px; margin-bottom: 15px;">
         <h4 style="margin-top:0; margin-bottom:15px; font-size:14px; text-align:center;">📊 Ringkasan Nilai Kelas</h4>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 25%; text-align: center; border: 1px solid var(--border);">
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
+            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; text-align: center; border: 1px solid var(--border);">
                 <div style="font-size: 11px; color: var(--text-muted);">Rata-rata</div>
                 <div style="font-size: 18px; font-weight: bold; color: var(--primary);">${rataRata}</div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 25%; text-align: center; border: 1px solid var(--border);">
+            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; text-align: center; border: 1px solid var(--border);">
                 <div style="font-size: 11px; color: var(--text-muted);">Tertinggi</div>
                 <div style="font-size: 18px; font-weight: bold; color: var(--success);">${nilaiMax}</div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 25%; text-align: center; border: 1px solid var(--border);">
+            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; text-align: center; border: 1px solid var(--border);">
                 <div style="font-size: 11px; color: var(--text-muted);">Terendah</div>
                 <div style="font-size: 18px; font-weight: bold; color: var(--danger);">${nilaiMin}</div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 40%; text-align: center; border: 1px solid var(--border);">
-                <div style="font-size: 11px; color: var(--text-muted);">Tuntas (≥ ${batasKKM})</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--success);">${jmlLulus} <span style="font-size:12px; font-weight:normal;">Siswa (${persenLulus}%)</span></div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+            
+            <div style="position: relative; width: 100px; height: 100px;">
+                <canvas id="chartKelulusan"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -45%); text-align: center; pointer-events: none;">
+                    <div style="font-size: 16px; font-weight: 800; color: var(--text-main);">${persenLulus}%</div>
+                    <div style="font-size: 9px; font-weight: 600; color: var(--text-muted); margin-top: -3px;">Lulus</div>
+                </div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px; border-radius: 8px; flex: 1; min-width: 40%; text-align: center; border: 1px solid var(--border);">
-                <div style="font-size: 11px; color: var(--text-muted);">Remedial (< ${batasKKM})</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--danger);">${jmlRemedial} <span style="font-size:12px; font-weight:normal;">Siswa (${persenRemedial}%)</span></div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+                        <span style="width:10px; height:10px; border-radius:50%; background:var(--success); display:inline-block;"></span> Tuntas (≥ ${batasKKM})
+                    </div>
+                    <div style="font-size: 16px; font-weight: bold; color: var(--text-main); margin-left: 16px;">
+                        ${jmlLulus} <span style="font-size:11px; font-weight:600; color:var(--text-muted);">Siswa</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+                        <span style="width:10px; height:10px; border-radius:50%; background:var(--danger); display:inline-block;"></span> Remedial (< ${batasKKM})
+                    </div>
+                    <div style="font-size: 16px; font-weight: bold; color: var(--text-main); margin-left: 16px;">
+                        ${jmlRemedial} <span style="font-size:11px; font-weight:600; color:var(--text-muted);">Siswa</span>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>`;
 
@@ -127,6 +154,42 @@ function tampilkanStatistik() {
     </div>`;
 
     wadah.innerHTML = htmlStat;
+    
+    // Render Grafik Kelulusan setelah HTML disuntikkan
+    setTimeout(() => {
+        let ctx = document.getElementById('chartKelulusan');
+        if (ctx) {
+            // Hancurkan grafik lama jika sudah ada (mencegah error canvas menumpuk)
+            if (grafikKelulusan) grafikKelulusan.destroy(); 
+            
+            // Render grafik donat baru
+            grafikKelulusan = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tuntas', 'Remedial'],
+                    datasets: [{
+                        data: [jmlLulus, jmlRemedial],
+                        backgroundColor: ['#34C759', '#FF3B30'], // Warna Success & Danger Apple
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Ketebalan cincin donat
+                    plugins: {
+                        legend: { display: false }, // Sembunyikan legenda bawaan
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' ' + context.label + ': ' + context.raw + ' Siswa'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }, 100);
 }
 
 // ==================== FITUR 5: MESIN CETAK RAPOR PDF ====================
