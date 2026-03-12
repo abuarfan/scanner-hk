@@ -371,6 +371,19 @@ function prosesDeteksiKertas(scanMode = 'manual') {
             
             bacaNilaiAI(namaSiswa, nilaiAkhir, scanMode);
             
+            // 🔥 FITUR 5: LEDAKAN CONFETTI JIKA NILAI SEMPURNA (100) 🔥
+            if (nilaiAkhir === 100) {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 200,
+                        spread: 100,
+                        origin: { y: 0.5 }, // Meledak dari tengah layar
+                        colors: ['#34C759', '#007AFF', '#FFD60A', '#FF3B30'],
+                        zIndex: 9999
+                    });
+                }
+            }
+            
             // 🔥 SCROLL HORIZONTAL YANG FIX (Menggunakan TBODY agar tidak hilang) 🔥
             htmlHasil += `
             <div class="card" style="padding: 15px;">

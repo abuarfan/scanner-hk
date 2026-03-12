@@ -130,9 +130,10 @@ function putarSuara(isSukses) {
 
 function updateActionButtons() {
     const hasData = Array.isArray(riwayatData) && riwayatData.length > 0;
-    // PENTING: ID sudah disesuaikan dengan Sub-Tab yang baru
     const btns = [
         document.getElementById('btnDownloadExcel'), 
+        document.getElementById('btnShareWA'),
+        document.getElementById('btnCetakRekap'), // 🔥 Tombol PDF Didaftarkan
         document.getElementById('btnSubAnalisis'), 
         document.getElementById('btnSubNyontek')
     ];
@@ -156,7 +157,20 @@ function buatBarisTabel(data) {
     return `<tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 0; color:var(--text-muted);">${data.nomor}.</td><td style="color:${warna};">${teks} ${ikon}</td></tr>`;
 }
 
-// 🔥 HEADER TABEL DIMUNCULKAN KEMBALI 🔥
+// 🔥 VARIABEL GLOBAL UNTUK SORTING TABEL 🔥
+let sortCol = 'nilai';
+let sortAsc = false;
+
+function sortTable(col) {
+    if (sortCol === col) {
+        sortAsc = !sortAsc; // Balik urutan jika kolom yang sama diklik
+    } else {
+        sortCol = col;
+        sortAsc = (col === 'nama' || col === 'id'); // Default A-Z untuk teks, Tertinggi ke Terendah untuk angka
+    }
+    renderTabelRiwayat();
+}
+
 function renderTabelRiwayat() {
     const tabel = document.getElementById('tabelRiwayat');
     const count = document.getElementById('countKelas');
@@ -164,41 +178,56 @@ function renderTabelRiwayat() {
     
     if (!riwayatData || riwayatData.length === 0) {
         if(count) count.innerText = "0 Siswa";
-        tabel.innerHTML = `<tr><td colspan="8" style="padding: 30px; text-align:center; color: var(--text-muted);">Belum ada data scan.</td></tr>`;
+        tabel.innerHTML = `<tr><td colspan=\"8\" style=\"padding: 30px; text-align:center; color: var(--text-muted);\">Belum ada data scan.</td></tr>`;
         updateActionButtons(); return;
     }
 
     if(count) count.innerText = `${riwayatData.length} Siswa`;
     
+    // 🔥 UI POLISH: Icon Sorting Premium (Biru untuk Aktif, Pudar untuk Inaktif) 🔥
+    let getIcon = (col) => {
+        if (sortCol === col) return sortAsc ? ' <span style="color:var(--primary);">▴</span>' : ' <span style="color:var(--primary);">▾</span>';
+        return ' <span style="opacity:0.3;">▾</span>';
+    };
+
     let htmlContent = `
     <thead>
-        <tr>
-            <th>ID</th>
-            <th class="text-left">Nama</th>
-            <th>B</th>
-            <th>S</th>
-            <th>K</th>
-            <th>G</th>
-            <th>Skor</th>
-            <th>WA</th>
+        <tr style="cursor: pointer; user-select: none;">
+            <th onclick="sortTable('id')" title="Urutkan ID/NIS">ID${getIcon('id')}</th>
+            <th class="text-left" onclick="sortTable('nama')" title="Urutkan Nama">Nama${getIcon('nama')}</th>
+            <th onclick="sortTable('benar')" title="Urutkan Jumlah Benar">B${getIcon('benar')}</th>
+            <th onclick="sortTable('salah')" title="Urutkan Jumlah Salah">S${getIcon('salah')}</th>
+            <th onclick="sortTable('kosong')" title="Urutkan Kosong">K${getIcon('kosong')}</th>
+            <th onclick="sortTable('ganda')" title="Urutkan Ganda">G${getIcon('ganda')}</th>
+            <th onclick="sortTable('nilai')" title="Urutkan Nilai/Skor">Skor${getIcon('nilai')}</th>
+            <th>Aksi</th>
         </tr>
     </thead><tbody>`;
 
-    let sortedRiwayat = [...riwayatData].sort((a, b) => b.nilai - a.nilai);
+    // 🔥 LOGIKA SORTING DINAMIS 🔥
+    let sortedRiwayat = [...riwayatData].sort((a, b) => {
+        let valA = a[sortCol]; let valB = b[sortCol];
+        if (typeof valA === 'string') valA = valA.toLowerCase();
+        if (typeof valB === 'string') valB = valB.toLowerCase();
+        
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+    });
     
-    // 🔥 UBAH parseInt MENJADI parseFloat AGAR SINKRON DENGAN BOBOT/TO 🔥
     let batasKKM = parseFloat(document.getElementById('inputKKM').value);
     if(isNaN(batasKKM)) batasKKM = 75;
 
     sortedRiwayat.forEach((data) => {
         let isLulus = data.nilai >= batasKKM;
-        // Logo WA Official (SVG)
         let iconWA = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
         
+        // 🔥 TOMBOL AKSI: CETAK PDF RAPOR & WA 🔥
+        let btnPDF = `<button class="pdf-btn" onclick="cetakRapor(event, '${data.id}')" title="Cetak Rapor PDF">📄</button>`;
         let btnKirim = `<button class="wa-btn" onclick="kirimWA(event, '${data.nama}', ${data.nilai}, ${data.benar}, ${data.salah}, ${isLulus})" title="Kirim WA">${iconWA}</button>`;
 
         htmlContent += `
-            <tr style="cursor: pointer;" onclick="if(event.target.tagName.toLowerCase() !== 'button') koreksiManual('${data.id}')">
+            <tr style="cursor: pointer;" onclick="if(event.target.tagName.toLowerCase() !== 'button' && event.target.tagName.toLowerCase() !== 'svg' && event.target.tagName.toLowerCase() !== 'path') koreksiManual('${data.id}')">
                 <td style="font-weight: 600; color: var(--text-muted);">${data.id}</td>
                 <td class="text-left">${data.nama}</td>
                 <td style="color: var(--success); font-weight: bold;">${data.benar}</td>
@@ -206,7 +235,12 @@ function renderTabelRiwayat() {
                 <td style="color: var(--warning); font-weight: bold;">${data.kosong}</td>
                 <td style="color: #FF3B30; font-weight: bold;">${data.ganda || 0}</td>
                 <td><div class="badge-score">${data.nilai}</div></td>
-                <td>${btnKirim}</td>
+                <td>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        ${btnPDF}
+                        ${btnKirim}
+                    </div>
+                </td>
             </tr>
         `;
     });
@@ -214,6 +248,35 @@ function renderTabelRiwayat() {
     htmlContent += `</tbody>`;
     tabel.innerHTML = htmlContent;
     updateActionButtons();
+}
+
+// 🔥 MESIN REKAP WA MASSAL 🔥
+function shareRekapWA() {
+    if (!riwayatData || riwayatData.length === 0) {
+        Toast.fire({ icon: 'warning', title: 'Belum ada data nilai!' });
+        return;
+    }
+    
+    let mapel = document.getElementById('pilihProfil').value || "Ujian Kelas";
+    let teks = `📊 *REKAP NILAI HASIL UJIAN*\n📚 Kelas/Mapel: *${mapel}*\n👥 Total Partisipan: *${riwayatData.length} Siswa*\n\n*Peringkat & Nilai:*\n`;
+    
+    // Selalu urutkan dari nilai tertinggi khusus untuk laporan WA
+    let rekapSorted = [...riwayatData].sort((a, b) => b.nilai - a.nilai);
+    
+    rekapSorted.forEach((d, idx) => {
+        let medali = '';
+        if(idx === 0) medali = '🥇 ';
+        else if(idx === 1) medali = '🥈 ';
+        else if(idx === 2) medali = '🥉 ';
+        else medali = '▫️ ';
+        
+        teks += `${medali}${idx+1}. ${d.nama} - *${d.nilai}*\n`;
+    });
+    
+    teks += `\n_Digenerate otomatis oleh LJK Scanner Pro_`;
+    
+    // Buka aplikasi WhatsApp dengan pesan yang sudah diketik
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
 }
 
 async function koreksiManual(idSiswa) {

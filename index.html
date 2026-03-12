@@ -229,7 +229,7 @@
             align-self: center !important; /* 🎯 PAKSA DI TENGAH VERTIKAL */
         }
 
-        /* FIX 4: KOTAK NILAI (100) & Tombol WA Official */
+        /* FIX 4: KOTAK NILAI (100) & Tombol Aksi Tabel */
         .badge-score {
             height: 32px !important;
             min-width: 44px !important;
@@ -242,7 +242,8 @@
             margin: 0 auto !important;
         }
 
-        #tabelRiwayat .wa-btn {
+        #tabelRiwayat .wa-btn,
+        #tabelRiwayat .pdf-btn {
             height: 32px !important;
             width: 34px !important;
             min-width: 34px !important;
@@ -252,15 +253,18 @@
             box-sizing: border-box !important;
             border-radius: 6px !important;
             padding: 0 !important;
-            margin: 0 auto !important;
-            background-color: #25D366 !important; /* 🔥 Warna Hijau Resmi WhatsApp 🔥 */
-            color: white !important; /* Warna ikon SVG menjadi putih bersih */
+            margin: 0 !important; /* 🔥 Margin dibuat 0 agar jarak bisa diatur oleh Flexbox Gap 🔥 */
+            color: white !important;
             border: none !important;
             cursor: pointer !important;
             transition: transform 0.2s ease, opacity 0.2s ease !important;
         }
 
-        #tabelRiwayat .wa-btn:hover {
+        #tabelRiwayat .wa-btn { background-color: #25D366 !important; }
+        #tabelRiwayat .pdf-btn { background-color: #FF3B30 !important; font-size: 15px !important;}
+
+        #tabelRiwayat .wa-btn:hover,
+        #tabelRiwayat .pdf-btn:hover {
             opacity: 0.85 !important;
             transform: scale(1.08) !important;
         }
@@ -270,7 +274,7 @@
 
     <div class="header">
         <h2>LJK Scanner Pro</h2>
-        <p>Smart Exam Scanner and Analyzer - v6.5</p>
+        <p>Smart Exam Scanner and Analyzer - v6.7</p>
         <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()">🌙</button>
     </div>
     
@@ -358,9 +362,11 @@
                 <div class="card" style="padding: 0; margin-bottom: 15px;">
                     <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-weight: 700; font-size: 14px;" id="countKelas">0 Siswa</span>
-                        <div style="display:flex; gap:8px;">
-                            <button class="wa-btn" style="background: var(--danger); font-size:14px;" onclick="resetRiwayat()">🗑️ Reset</button>
-                            <button class="wa-btn" style="background: var(--primary); font-size:14px;" id="btnDownloadExcel" onclick="downloadExcel()">⬇️ Excel</button>
+                        <div style="display:flex; gap:6px;">
+                            <button class="wa-btn" style="background: var(--danger); font-size:12px; padding:6px 8px;" onclick="resetRiwayat()">🗑️ Reset</button>
+                            <button class="wa-btn" style="background: #25D366; font-size:12px; padding:6px 8px;" id="btnShareWA" onclick="shareRekapWA()">💬 WA</button>
+                            <button class="wa-btn" style="background: #FF3B30; font-size:12px; padding:6px 8px;" id="btnCetakRekap" onclick="cetakRekapKelas()">📄 Print</button>
+                            <button class="wa-btn" style="background: var(--primary); font-size:12px; padding:6px 8px;" id="btnDownloadExcel" onclick="downloadExcel()">⬇️ Excel</button>
                         </div>
                     </div>
                     
@@ -551,6 +557,8 @@
             <span>Setelan</span>
         </button>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script src="storage.js"></script>
     <script src="ui.js"></script>
