@@ -232,11 +232,12 @@ async function koreksiManual(idSiswa) {
     const result = await Swal.fire({
         title: `Koreksi: ${d.nama}`,
         html: `<div style="text-align: left; font-size: 14px;">
-                <label style="font-weight:bold; color:var(--text-muted);">Pilih Nomor Soal:</label>
-                <select id="swal-input1" class="input-css" style="margin-bottom:15px; margin-top:5px;">${opsiSoal}</select>
-                <label style="font-weight:bold; color:var(--text-muted);">Ubah Jawaban Menjadi:</label>
-                <select id="swal-input2" class="input-css" style="margin-top:5px;">
-                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="Kosong">KOSONG</option><option value="Ganda">GANDA</option>
+                <label style="font-weight:bold; color:var(--text-muted); margin-left: 2px;">Pilih Nomor Soal:</label>
+                <select id="swal-input1" style="width: 100%; height: 44px; margin-top: 8px; margin-bottom: 20px; padding: 0 15px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; background: var(--bg-input); color: var(--text-main); outline: none; box-sizing: border-box; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">${opsiSoal}</select>
+                
+                <label style="font-weight:bold; color:var(--text-muted); margin-left: 2px;">Ubah Jawaban Menjadi:</label>
+                <select id="swal-input2" style="width: 100%; height: 44px; margin-top: 8px; padding: 0 15px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; background: var(--bg-input); color: var(--text-main); outline: none; box-sizing: border-box; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="Kosong">KOSONG</option><option value="GANDA">GANDA</option>
                 </select>
             </div>`,
         focusConfirm: false, showCancelButton: true, showDenyButton: true, 
