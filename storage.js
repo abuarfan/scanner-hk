@@ -16,6 +16,144 @@ let statistikSalah = Array(60).fill(0);
 let autoScanTimer = null;
 let daftarProfil = {}; 
 
+// ==================== KONFIGURASI SUPABASE ====================
+// 🔥 WAJIB DIISI DENGAN URL & ANON KEY PROJECT SUPABASE-MU 🔥
+const SUPABASE_URL = "https://rfmlsxtchzhstheqdmla.supabase.co"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWxzeHRjaHpoc3RoZXFkbWxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTA2MDEsImV4cCI6MjA4MjA2NjYwMX0.uuBqvhQ-1fsB2cF63-uluHpS6I-1JuYv5dF1bPcZdrU"; 
+
+// ==================== SISTEM MODE SUMBER DATA ====================
+// Menyimpan data mentah di memori lokal agar tidak saling tabrak
+let dbRawSupabase = JSON.parse(localStorage.getItem('dbRawSupabase')) || {};
+let dbRawExcel = JSON.parse(localStorage.getItem('dbRawExcel')) || {};
+// (dbRawManual akan langsung membaca dari elemen #inputDBSiswa)
+
+document.addEventListener("DOMContentLoaded", () => {
+    let modeTersimpan = localStorage.getItem('modeSumberData') || 'supabase';
+    let elMode = document.getElementById('modeSumberData');
+    if(elMode) { elMode.value = modeTersimpan; ubahModeSumberData(); }
+    
+    // Ambil daftar kelas dari Supabase saat aplikasi dibuka
+    if(modeTersimpan === 'supabase') { muatDaftarKelasSupabase(); }
+});
+
+function ubahModeSumberData() {
+    let mode = document.getElementById('modeSumberData').value;
+    localStorage.setItem('modeSumberData', mode);
+
+    // Atur tampilan Panel
+    document.getElementById('panelSupabase').style.display = (mode === 'supabase') ? 'block' : 'none';
+    document.getElementById('panelExcel').style.display = (mode === 'excel') ? 'block' : 'none';
+    document.getElementById('panelManual').style.display = (mode === 'manual') ? 'block' : 'none';
+
+    // Muat kelas jika pindah ke mode Supabase dan belum dimuat
+    if(mode === 'supabase') muatDaftarKelasSupabase();
+
+    // Re-compile database siswa utama agar sesuai dengan mode yang dipilih
+    simpanDataSiswa(); 
+}
+
+// ==================== FUNGSI SUPABASE (PRIORITAS 1) ====================
+async function muatDaftarKelasSupabase() {
+    let selectKelas = document.getElementById('pilihKelasSupabase');
+    if(selectKelas.options.length > 1) return; // Jika sudah dimuat, lewati
+
+    try {
+        // Memanggil REST API Supabase untuk mengambil kolom 'kelas'
+        let response = await fetch(`${SUPABASE_URL}/rest/v1/santri?select=kelas`, {
+            method: 'GET',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        
+        if (!response.ok) throw new Error("Gagal mengambil kelas");
+        let data = await response.json();
+        
+        // Buat Array Kelas yang unik (menghilangkan duplikat) dan diurutkan
+        let kelasUnik = [...new Set(data.map(item => item.kelas).filter(k => k))].sort();
+        
+        selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        kelasUnik.forEach(k => { selectKelas.innerHTML += `<option value="${k}">${k}</option>`; });
+        
+    } catch (error) {
+        console.error(error);
+        selectKelas.innerHTML = '<option value="">⚠️ Gagal memuat koneksi server</option>';
+    }
+}
+
+async function tarikDataSupabase() {
+    let kelasDipilih = document.getElementById('pilihKelasSupabase').value;
+    if(!kelasDipilih) { Toast.fire({ icon: 'warning', title: 'Pilih kelas terlebih dahulu!' }); return; }
+
+    let btnTarik = document.querySelector('#panelSupabase .btn-utama');
+    btnTarik.innerHTML = "⏳"; btnTarik.disabled = true;
+
+    try {
+        // Ambil data santri HANYA dari kelas yang dipilih
+        let response = await fetch(`${SUPABASE_URL}/rest/v1/santri?kelas=eq.${encodeURIComponent(kelasDipilih)}&select=nis,nama_santri`, {
+            method: 'GET',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+
+        if (!response.ok) throw new Error("Gagal menarik data siswa");
+        let data = await response.json();
+
+        // 🔥 FORMAT DATA & KONVERSI NIS KE 5 DIGIT TERAKHIR 🔥
+        dbRawSupabase = {};
+        data.forEach(siswa => { 
+            let nisLengkap = String(siswa.nis).trim();
+            // Ambil 5 digit terakhir, atau tambahkan '0' di depan jika kurang dari 5 digit
+            let nis5 = nisLengkap.length >= 5 ? nisLengkap.slice(-5) : nisLengkap.padStart(5, '0');
+            
+            dbRawSupabase[nis5] = siswa.nama_santri; 
+        });
+        
+        // Simpan ke localStorage khusus Supabase
+        localStorage.setItem('dbRawSupabase', JSON.stringify(dbRawSupabase));
+        
+        // Update UI
+        document.getElementById('infoSupabase').innerText = `✅ Tersimpan: ${Object.keys(dbRawSupabase).length} Santri (Kelas ${kelasDipilih})`;
+        Toast.fire({ icon: 'success', title: 'Data Supabase Berhasil Ditarik!' });
+        
+        simpanDataSiswa(); // Re-compile dbSiswa global
+    } catch (error) {
+        console.error(error);
+        Toast.fire({ icon: 'error', title: 'Koneksi ke Supabase Gagal!' });
+    } finally {
+        btnTarik.innerHTML = "⬇️ Tarik"; btnTarik.disabled = false;
+    }
+}
+
+// ==================== FUNGSI COMPILER UTAMA ====================
+// Fungsi ini menggantikan fungsi lama yang hanya membaca dari Textarea
+function simpanDataSiswa() {
+    let mode = localStorage.getItem('modeSumberData') || 'supabase';
+    dbSiswa = {}; // Reset global dbSiswa
+    
+    if (mode === 'supabase') {
+        dbSiswa = Object.assign({}, dbRawSupabase);
+        let count = Object.keys(dbSiswa).length;
+        document.getElementById('infoSupabase').innerText = count > 0 ? `✅ Aktif: ${count} Santri dari Server` : `Belum ada data ditarik.`;
+        
+    } else if (mode === 'excel') {
+        dbSiswa = Object.assign({}, dbRawExcel);
+        let count = Object.keys(dbSiswa).length;
+        document.getElementById('infoExcel').innerText = count > 0 ? `✅ Aktif: ${count} Santri dari Excel` : `Belum ada file diupload.`;
+        
+    } else if (mode === 'manual') {
+        let lines = document.getElementById('inputDBSiswa').value.split('\n');
+        lines.forEach(line => {
+            let parts = line.split('=');
+            if(parts.length >= 2) { dbSiswa[parts[0].trim()] = parts[1].trim(); }
+        });
+    }
+
+    // Update jumlah siswa di tab Nilai (jika elemennya ada)
+    let countTotal = Object.keys(dbSiswa).length;
+    let elCount = document.getElementById('countKelas');
+    if(elCount) elCount.innerText = `${countTotal} Siswa Terdaftar`;
+    
+    console.log(`[Database LJK] Mode: ${mode.toUpperCase()} | Total Data Aktif: ${countTotal}`);
+}
+
 // ==================== ENGINE KUNCI JAWABAN ====================
 function parseKunci(str) {
     let text = (str || '').toUpperCase().replace(/\s+/g, '');
@@ -257,7 +395,8 @@ function simpanPengaturan(isSilent = false) {
     localStorage.setItem('kkmLJK', document.getElementById('inputKKM').value);
     localStorage.setItem('suaraAILJK', document.getElementById('cbSuaraAI').checked);
     
-    parseDBSiswa();
+    // 🔥 PERBAIKAN: Kita panggil Compiler Utama kita yang baru! 🔥
+    simpanDataSiswa(); 
 
     if(riwayatData.length > 0) {
         let totalAktif = tokens.filter(t => !t.includes('X')).length;
@@ -318,20 +457,26 @@ function importExcelSiswa(event) {
         let worksheet = workbook.Sheets[firstSheetName];
         let jsonArray = XLSX.utils.sheet_to_json(worksheet, {header: 1});
         
-        let hasilDB = [];
+        dbRawExcel = {}; // Reset kamar data Excel
+        let count = 0;
+
         for (let i = 1; i < jsonArray.length; i++) {
             let row = jsonArray[i];
             if (row.length >= 2 && row[0] != null && row[1] != null) {
-                let nis = String(row[0]).trim(); let nama = String(row[1]).trim();
+                let nis = String(row[0]).trim(); 
+                let nama = String(row[1]).trim();
                 let nis5 = nis.length >= 5 ? nis.slice(-5) : nis.padStart(5, '0');
-                hasilDB.push(`${nis5}=${nama}`);
+                
+                // 🔥 SEKARANG DATA DISIMPAN KE KAMAR EXCEL, BUKAN KE TEXTAREA 🔥
+                dbRawExcel[nis5] = nama; 
+                count++;
             }
         }
 
-        if (hasilDB.length > 0) {
-            document.getElementById('inputDBSiswa').value = hasilDB.join('\n');
-            simpanPengaturan();
-            Swal.fire('Berhasil!', `Berhasil mengimpor <b>${hasilDB.length}</b> data siswa.`, 'success');
+        if (count > 0) {
+            localStorage.setItem('dbRawExcel', JSON.stringify(dbRawExcel));
+            simpanDataSiswa(); // Compile & Refresh UI
+            Swal.fire('Berhasil!', `Berhasil mengimpor <b>${count}</b> data siswa dari Excel.`, 'success');
         } else {
             Swal.fire('Gagal', 'Tidak ada data yang valid. Pastikan Kolom 1 adalah NIS dan Kolom 2 adalah Nama Santri.', 'error');
         }

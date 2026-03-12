@@ -278,7 +278,7 @@
                         <label>Sistem Penilaian</label>
                         <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
                             <option value="standar">Persentase Standar (0 - 100)</option>
-                            <option value="utbk">Try Out UTBK (+4, -1, Kosong 0)</option>
+                            <option value="utbk">Try Out UTBK (+4, -1, 0)</option>
                             <option value="bobot">Berdasarkan Bobot (Custom)</option>
                         </select>
                     </div>
@@ -326,17 +326,45 @@
 
             <div id="set-siswa" class="sub-tab-content">
                 <div class="card" style="margin-bottom: 40px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <label style="margin:0; font-weight:bold; font-size:14px;">Database Siswa</label>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-utama btn-outline" style="width:auto; padding:6px 12px; font-size:13px; border-radius:8px;" onclick="document.getElementById('inputExcelSiswa').click()">
-                                📄 Import Excel
-                            </button>
-                            <input type="file" id="inputExcelSiswa" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelSiswa(event)">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                        <label style="margin:0; font-weight:bold; font-size:14px;">Mode Sumber Data</label>
+                        <select id="modeSumberData" class="input-css" style="width: auto; margin:0; padding: 6px 35px 6px 12px; font-size:12px; background-color: var(--bg-card);" onchange="ubahModeSumberData()">
+                            <option value="supabase">1. Database Server (Utama)</option>
+                            <option value="excel">2. Upload Excel (Cadangan)</option>
+                            <option value="manual">3. Ketik Manual (Darurat)</option>
+                        </select>
+                    </div>
+
+                    <div id="panelSupabase">
+                        <p style="font-size:11px; color:var(--text-muted); margin-top:0; margin-bottom:10px;">Menarik data langsung dari server Supabase berdasarkan kelas.</p>
+                        <div style="display:flex; gap:8px;">
+                            <select id="pilihKelasSupabase" class="input-css" style="flex:1; margin:0;">
+                                <option value="">Memuat Kelas...</option>
+                            </select>
+                            <button class="btn-utama" style="width:auto; padding: 0 15px;" onclick="tarikDataSupabase()">⬇️ Tarik</button>
+                        </div>
+                        <div id="infoSupabase" style="margin-top:12px; font-size:12px; font-weight:bold; color:var(--primary); text-align:center; background:var(--bg-input); padding:8px; border-radius:8px;">
+                            Belum ada data ditarik.
                         </div>
                     </div>
-                    <textarea id="inputDBSiswa" class="input-css" rows="10" placeholder="Format: ID=Nama (Contoh: 12345=Budi)" onchange="simpanPengaturan()">40961=Agus (Contoh)
-98765=Budi (Contoh)</textarea>
+
+                    <div id="panelExcel" style="display:none;">
+                        <p style="font-size:11px; color:var(--text-muted); margin-top:0; margin-bottom:10px;">Gunakan file Excel jika server utama sedang *down* atau *offline*.</p>
+                        <button class="btn-utama btn-outline" style="width:100%;" onclick="document.getElementById('inputExcelSiswa').click()">
+                            📄 Upload File Excel (.xlsx)
+                        </button>
+                        <input type="file" id="inputExcelSiswa" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelSiswa(event)">
+                        <div id="infoExcel" style="margin-top:12px; font-size:12px; font-weight:bold; color:var(--success); text-align:center; background:var(--bg-input); padding:8px; border-radius:8px;">
+                            Belum ada file diupload.
+                        </div>
+                    </div>
+
+                    <div id="panelManual" style="display:none;">
+                        <p style="font-size:11px; color:var(--text-muted); margin-top:0; margin-bottom:10px;">Ketik manual dengan format <b>NIS=Nama Siswa</b> per baris.</p>
+                        <textarea id="inputDBSiswa" class="input-css" rows="8" placeholder="Contoh:&#10;12345=Budi Santoso&#10;67890=Siti Aminah" onchange="simpanDataSiswa()"></textarea>
+                    </div>
+
                 </div>
             </div>
 
