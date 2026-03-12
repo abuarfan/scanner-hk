@@ -221,9 +221,10 @@ async function koreksiManual(idSiswa) {
     if (mhsIndex === -1) return;
     let d = riwayatData[mhsIndex];
     let opsiSoal = '';
+    
     d.rincian.forEach(r => {
         if(r.status === "DIABAIKAN") return; 
-        let info = r.status === "Benar" ? "✔️ Benar" : (r.status === "Ganda" ? `⚠️ Ganda (${r.jawaban})` : `❌ (Jawab: ${r.jawaban})`);
+        let info = r.status === "BENAR" ? "✔️ Benar" : (r.status === "GANDA" ? `⚠️ Ganda (${r.jawaban})` : `❌ (Jawab: ${r.jawaban})`);
         opsiSoal += `<option value="${r.nomor}">No. ${r.nomor} - ${info}</option>`;
     });
 
@@ -231,19 +232,39 @@ async function koreksiManual(idSiswa) {
 
     const result = await Swal.fire({
         title: `Koreksi: ${d.nama}`,
-        html: `<div style="text-align: left; font-size: 14px;">
-                <label style="font-weight:bold; color:var(--text-muted); margin-left: 2px;">Pilih Nomor Soal:</label>
-                <select id="swal-input1" style="width: 100%; height: 44px; margin-top: 8px; margin-bottom: 20px; padding: 0 15px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; background: var(--bg-input); color: var(--text-main); outline: none; box-sizing: border-box; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">${opsiSoal}</select>
+        // 🔥 Tambahkan overflow:visible agar menu dropdown tidak terpotong popup 🔥
+        html: `<div style="text-align: left; font-size: 14px; overflow: visible; padding-bottom: 20px;">
+                <label style="font-weight:bold; color:var(--text-muted); display:block; margin-bottom:8px; margin-left:2px;">Pilih Nomor Soal:</label>
+                <select id="swal-input1" style="width: 100%; margin-bottom:20px;">${opsiSoal}</select>
                 
-                <label style="font-weight:bold; color:var(--text-muted); margin-left: 2px;">Ubah Jawaban Menjadi:</label>
-                <select id="swal-input2" style="width: 100%; height: 44px; margin-top: 8px; padding: 0 15px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; background: var(--bg-input); color: var(--text-main); outline: none; box-sizing: border-box; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                <label style="font-weight:bold; color:var(--text-muted); display:block; margin-bottom:8px; margin-left:2px;">Ubah Jawaban Menjadi:</label>
+                <select id="swal-input2" style="width: 100%;">
                     <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="Kosong">KOSONG</option><option value="GANDA">GANDA</option>
                 </select>
             </div>`,
-        focusConfirm: false, showCancelButton: true, showDenyButton: true, 
-        confirmButtonText: '💾 Simpan', cancelButtonText: 'Batal', denyButtonText: '🗑️ Hapus', 
-        confirmButtonColor: 'var(--success)', denyButtonColor: 'var(--danger)',
-        preConfirm: () => { return { nomor: parseInt(document.getElementById('swal-input1').value), jawabanBaru: document.getElementById('swal-input2').value } }
+        focusConfirm: false, 
+        showCancelButton: true, 
+        showDenyButton: true, 
+        confirmButtonText: '💾 Simpan', 
+        cancelButtonText: 'Batal', 
+        denyButtonText: '🗑️ Hapus', 
+        confirmButtonColor: 'var(--success)', 
+        denyButtonColor: 'var(--danger)',
+        
+        // 🔥 MANTRA SAKTI: Panggil Custom Dropdown saat Popup Terbuka! 🔥
+        didOpen: () => {
+            if(typeof sulapMenjadiCustomDropdown === 'function') {
+                sulapMenjadiCustomDropdown('swal-input1');
+                sulapMenjadiCustomDropdown('swal-input2');
+            }
+        },
+        
+        preConfirm: () => { 
+            return { 
+                nomor: parseInt(document.getElementById('swal-input1').value), 
+                jawabanBaru: document.getElementById('swal-input2').value 
+            } 
+        }
     });
 
     if (result.isConfirmed) {
@@ -258,11 +279,11 @@ async function koreksiManual(idSiswa) {
             d.rincian.forEach((item, idx) => {
                 let tk = idx < kunciTokens.length ? kunciTokens[idx] : null;
                 if (!tk || tk.includes('X')) { item.status = "DIABAIKAN"; } 
-                else if (tk.includes('*')) { jBenar++; item.status = "Benar"; } 
-                else if (item.jawaban === "Kosong") { jKosong++; item.status = "Kosong"; } 
-                else if (item.jawaban === "Ganda") { jGanda++; item.status = "Ganda"; } 
-                else if (tk.includes(item.jawaban)) { jBenar++; item.status = "Benar"; } 
-                else { jSalah++; item.status = "Salah"; }
+                else if (tk.includes('*')) { jBenar++; item.status = "BENAR"; } 
+                else if (item.jawaban === "Kosong") { jKosong++; item.status = "KOSONG"; } 
+                else if (item.jawaban === "GANDA") { jGanda++; item.status = "GANDA"; } 
+                else if (tk.includes(item.jawaban)) { jBenar++; item.status = "BENAR"; } 
+                else { jSalah++; item.status = "SALAH"; }
             });
             d.benar = jBenar; d.salah = jSalah; d.kosong = jKosong; d.ganda = jGanda;
             d.nilai = hitungNilaiAkhir(d.rincian, totalAktif);
