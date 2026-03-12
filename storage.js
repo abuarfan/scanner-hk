@@ -142,7 +142,15 @@ function simpanDataSiswa() {
         let lines = document.getElementById('inputDBSiswa').value.split('\n');
         lines.forEach(line => {
             let parts = line.split('=');
-            if(parts.length >= 2) { dbSiswa[parts[0].trim()] = parts[1].trim(); }
+            if(parts.length >= 2) { 
+                let nisRaw = parts[0].trim();
+                let namaRaw = parts[1].trim();
+                
+                // 🔥 SAKTI: Ambil 5 digit terakhir saja! 🔥
+                let nis5 = nisRaw.length >= 5 ? nisRaw.slice(-5) : nisRaw.padStart(5, '0');
+                
+                dbSiswa[nis5] = namaRaw; 
+            }
         });
     }
 
@@ -172,6 +180,46 @@ function parseKunci(str) {
     return tokens.slice(0, 60); 
 }
 
+// ==================== AUTO-FORMAT KUNCI JAWABAN ====================
+function formatKunciOtomatis() {
+    let elem = document.getElementById('inputKunci');
+    if (!elem) return;
+    
+    // Simpan posisi kursor agar saat mengetik tidak loncat
+    let start = elem.selectionStart; 
+    let originalLength = elem.value.length;
+    
+    // Bersihkan karakter aneh, hanya sisakan A-E, *, X, dan /
+    let val = elem.value.toUpperCase().replace(/[^A-E*X\/]/g, '');
+    let formatted = '';
+    let count = 0;
+    
+    for (let i = 0; i < val.length; i++) {
+        formatted += val[i];
+        
+        // Cek jika huruf adalah jawaban sah (A-E, *, X)
+        if (/[A-E*X]/.test(val[i])) {
+            // Jika huruf SETELAHNYA BUKAN '/', berarti ini 1 nomor penuh (misal A/B dihitung 1)
+            if (val[i+1] !== '/') {
+                count++;
+                // Jika sudah 20 nomor dan belum di ujung teks, Pindah Baris!
+                if (count > 0 && count % 20 === 0 && i !== val.length - 1) {
+                    formatted += '\n';
+                }
+            }
+        }
+    }
+    
+    elem.value = formatted;
+    
+    // Kembalikan kursor ke posisi yang tepat
+    let diff = formatted.length - originalLength;
+    elem.setSelectionRange(start + diff, start + diff);
+
+    // Update counter jika fungsinya ada
+    if(typeof updateCounterKunci === 'function') updateCounterKunci();
+}
+
 function hitungNilaiAkhir(rincian, totalSoalAktif = 60) {
     let tipePenilaian = document.getElementById('sistemPenilaian').value;
     if (totalSoalAktif <= 0) return 0;
@@ -197,7 +245,12 @@ function hitungNilaiAkhir(rincian, totalSoalAktif = 60) {
             }
         });
         return Math.round(totalSkor * 100) / 100; 
+        
+    } else if (tipePenilaian === 'benar') {
+        return benar; 
+        
     } else {
+        // Default: Persentase Standar (0 - 100)
         return Math.round((benar / totalSoalAktif) * 100);
     }
 }
@@ -300,7 +353,7 @@ function restoreDataFromObject(data, mode = 'replace') {
     
     document.getElementById('pilihProfil').value = data.namaMapel || '';
     document.getElementById('inputKunci').value = (data.kunci || '').toUpperCase();
-    document.getElementById('sistemPenilaian').value = data.sistemPenilaian || 'standar';
+    document.getElementById('sistemPenilaian').value = data.sistemPenilaian || 'benar';
     document.getElementById('inputBobot').value = data.bobotLJK || '1';
     document.getElementById('inputKKM').value = data.kkm || 75;
     document.getElementById('cbSuaraAI').checked = data.suaraAI === true;

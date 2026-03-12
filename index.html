@@ -182,7 +182,7 @@
 
     <div class="header">
         <h2>LJK Scanner Pro</h2>
-        <p>Smart Vision AI - V6.1</p>
+        <p>Smart Exam Scanner and Analyzer - v6.3</p>
         <button class="btn-dark-mode" id="btnDarkMode" onclick="toggleDarkMode()">🌙</button>
     </div>
     
@@ -306,14 +306,15 @@
                             <span id="counterKunci" style="font-size:11px; font-weight:bold; color:var(--primary); background:var(--bg-card); padding:3px 10px; border-radius:12px; border:1px solid var(--primary); box-shadow: 0 2px 6px rgba(0,122,255,0.15);">0 / 60 Soal</span>
                         </div>
                         <p style="font-size:10px; color:var(--text-muted); margin-top:0; margin-bottom:8px;">Gunakan <b>X</b> = abaikan soal, <b>*</b> = bonus, dan <b>/</b> = opsi ganda (misal: <b>A/E</b>).</p>
-                        <input type="text" id="inputKunci" class="input-css input-kunci" value="ABCDEABCDEABCDEABCDEABCDE" maxlength="150" oninput="updateCounterKunci()" onchange="simpanPengaturan()">
+                        <textarea id="inputKunci" class="input-css input-kunci" rows="3" oninput="formatKunciOtomatis()" onchange="simpanPengaturan()" style="resize:none; line-height: 1.6; padding: 15px;">ABCDEABCDEABCDEABCDE</textarea>
                     </div>
                     
                     <div class="form-group">
                         <label>Sistem Penilaian</label>
                         <select id="sistemPenilaian" class="input-css" onchange="toggleInputBobot(); simpanPengaturan();">
+                            <option value="benar" selected>Jumlah Benar (Skor Mentah)</option>
                             <option value="standar">Persentase Standar (0 - 100)</option>
-                            <option value="utbk">Try Out UTBK (+4, -1, 0)</option>
+                            <option value="utbk">Try Out UTBK (+4, -1, Kosong 0)</option>
                             <option value="bobot">Berdasarkan Bobot (Custom)</option>
                         </select>
                     </div>
