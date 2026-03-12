@@ -10,7 +10,7 @@ function bersihkanMemoriCV(...mats) {
 async function mulaiKamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: false, // Mematikan mic agar tidak muncul notif blokir
+            audio: false, 
             video: { facingMode: "environment" } 
         });
         
@@ -23,35 +23,34 @@ async function mulaiKamera() {
         document.getElementById('kanvasHasil').style.display = 'none';
         document.getElementById('hasilUjian').innerHTML = '';
         
-        // MEMUNCULKAN TOMBOL SENTER
-        setTimeout(() => {
-            if (videoTrack && typeof videoTrack.getCapabilities === 'function') {
+        // 🔥 TERAPKAN MEMORI SENTER JIKA SEBELUMNYA SUDAH DINYALAKAN 🔥
+        setTimeout(async () => {
+            if (videoTrack && isSenterNyala) {
                 try {
-                    const capabilities = videoTrack.getCapabilities();
-                    let btnSenter = document.getElementById('btnSenter');
-                    if (capabilities.torch && btnSenter) {
-                        btnSenter.style.display = 'flex';
-                    }
-                } catch(e) { console.log("Senter tidak didukung"); }
+                    await videoTrack.applyConstraints({ advanced: [{ torch: true }] });
+                } catch(e) { console.log("Senter tidak didukung perangkat ini"); }
             }
         }, 500);
 
         toggleAutoScan();
     } catch (error) { 
-        // NOTIF ERROR DIHAPUS
         console.warn("Info Kamera:", error);
     }
 }
 
 async function toggleSenter() {
-    if (!videoTrack) return;
-    try {
-        isSenterNyala = !isSenterNyala;
-        await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] });
-        let btnSenter = document.getElementById('btnSenter');
-        if(btnSenter) btnSenter.innerHTML = isSenterNyala ? '💡' : '🔦';
-    } catch (err) {
-        console.error('Senter gagal dinyalakan:', err);
+    // 1. Ubah status memori & UI (Bisa dilakukan kapan saja, bahkan sebelum kamera buka)
+    isSenterNyala = !isSenterNyala;
+    let btnSenter = document.getElementById('btnSenter');
+    if(btnSenter) btnSenter.innerHTML = isSenterNyala ? '💡' : '🔦';
+
+    // 2. Jika kamera sedang aktif, langsung terapkan perubahan ke *hardware*
+    if (videoTrack) {
+        try {
+            await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] });
+        } catch (err) {
+            console.error('Senter gagal dinyalakan:', err);
+        }
     }
 }
 
@@ -141,13 +140,9 @@ function matikanKameraUI() {
         videoTrack.stop(); 
         videoTrack = null;
     }
-    isSenterNyala = false;
     
-    let btnSenter = document.getElementById('btnSenter');
-    if(btnSenter) {
-        btnSenter.style.display = 'none';
-        btnSenter.innerHTML = '🔦';
-    }
+    // 🔥 PERBAIKAN: Kita TIDAK mereset isSenterNyala agar memori pilihan pengguna tersimpan.
+    // Tombol UI akan tetap 💡 jika pengguna membiarkannya menyala.
     
     document.getElementById('wadahKamera').style.display = 'none';
     document.getElementById('btnAmbil').style.display = 'none';
