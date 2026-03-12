@@ -51,31 +51,27 @@ function tampilkanStatistik() {
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 25px; background: var(--bg-input); padding: 20px 15px; border-radius: 12px; border: 1px solid var(--border);">
             
-            <div style="position: relative; width: 100px; height: 100px;">
-                <canvas id="chartKelulusan"></canvas>
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -45%); text-align: center; pointer-events: none;">
-                    <div style="font-size: 16px; font-weight: 800; color: var(--text-main);">${persenLulus}%</div>
-                    <div style="font-size: 9px; font-weight: 600; color: var(--text-muted); margin-top: -3px;">Lulus</div>
-                </div>
+            <div style="position: relative; width: 100px; height: 100px; flex-shrink: 0;">
+                <canvas id="chartKelulusan" style="width:100px !important; height:100px !important;"></canvas>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
-                    <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
                         <span style="width:10px; height:10px; border-radius:50%; background:var(--success); display:inline-block;"></span> Tuntas (≥ ${batasKKM})
                     </div>
                     <div style="font-size: 16px; font-weight: bold; color: var(--text-main); margin-left: 16px;">
-                        ${jmlLulus} <span style="font-size:11px; font-weight:600; color:var(--text-muted);">Siswa</span>
+                        ${jmlLulus} <span style="font-size:12px; font-weight:600; color:var(--text-muted);">Siswa (${persenLulus}%)</span>
                     </div>
                 </div>
                 <div>
-                    <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
                         <span style="width:10px; height:10px; border-radius:50%; background:var(--danger); display:inline-block;"></span> Remedial (< ${batasKKM})
                     </div>
                     <div style="font-size: 16px; font-weight: bold; color: var(--text-main); margin-left: 16px;">
-                        ${jmlRemedial} <span style="font-size:11px; font-weight:600; color:var(--text-muted);">Siswa</span>
+                        ${jmlRemedial} <span style="font-size:12px; font-weight:600; color:var(--text-muted);">Siswa (${persenRemedial}%)</span>
                     </div>
                 </div>
             </div>

@@ -39,18 +39,23 @@ async function mulaiKamera() {
 }
 
 async function toggleSenter() {
-    // 1. Ubah status memori & UI (Bisa dilakukan kapan saja, bahkan sebelum kamera buka)
     isSenterNyala = !isSenterNyala;
     let btnSenter = document.getElementById('btnSenter');
-    if(btnSenter) btnSenter.innerHTML = isSenterNyala ? '💡' : '🔦';
-
-    // 2. Jika kamera sedang aktif, langsung terapkan perubahan ke *hardware*
-    if (videoTrack) {
-        try {
-            await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] });
-        } catch (err) {
-            console.error('Senter gagal dinyalakan:', err);
+    
+    // 🔥 Ubah warna SVG menjadi Kuning jika nyala, default jika mati
+    if(btnSenter) {
+        if (isSenterNyala) {
+            btnSenter.style.color = "var(--warning)";
+            btnSenter.style.borderColor = "var(--warning)";
+        } else {
+            btnSenter.style.color = "var(--text-main)";
+            btnSenter.style.borderColor = "var(--border)";
         }
+    }
+
+    if (videoTrack) {
+        try { await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] }); } 
+        catch (err) { console.error('Senter gagal dinyalakan:', err); }
     }
 }
 
