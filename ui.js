@@ -239,7 +239,9 @@ async function koreksiManual(idSiswa) {
             <style>.swal2-popup, .swal2-html-container { overflow: visible !important; }</style>
             <div style="text-align: left; font-size: 14px; overflow: visible; padding-bottom: 240px;">
                 <label style="font-weight:bold; color:var(--text-muted); display:block; margin-bottom:8px; margin-left:2px;">Pilih Nomor Soal:</label>
-                <select id="swal-input1" style="width: 100%; margin-bottom:20px;">${opsiSoal}</select>
+                <select id="swal-input1" style="width: 100%;">${opsiSoal}</select>
+                
+                <div style="height: 25px; width: 100%;"></div>
                 
                 <label style="font-weight:bold; color:var(--text-muted); display:block; margin-bottom:8px; margin-left:2px;">Ubah Jawaban Menjadi:</label>
                 <select id="swal-input2" style="width: 100%;">
