@@ -176,6 +176,92 @@
         
         .arrow-icon { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); stroke: var(--text-muted); }
         .custom-select-wrapper.open .arrow-icon { transform: rotate(180deg); stroke: var(--primary); }
+        
+        /* ========================================================= */
+        /* 🔥 UI POLISH: PENYELARASAN TINGGI & UKURAN KOTAK 🔥 */
+        /* ========================================================= */
+
+        /* FIX 1: Memaksa wadah baris agar meratakan semua anaknya tepat di tengah */
+        #panelSupabase > div,
+        .profil-container,
+        div[style*="display: flex"] {
+            align-items: center !important;
+        }
+
+        /* FIX 2: Menghapus margin gaib pada Dropdown agar tidak melorot */
+        .custom-select-wrapper {
+            height: 44px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+            align-self: center !important; /* 🎯 PAKSA DI TENGAH VERTIKAL */
+            display: block !important;
+        }
+
+        .custom-select-trigger {
+            height: 44px !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            border-radius: 10px !important;
+            line-height: normal !important;
+        }
+
+        /* FIX 3: Memaksa Tombol agar tegak sejajar dengan Dropdown */
+        button[onclick*="simpanProfil"], 
+        button[onclick*="hapusProfil"],
+        #panelSupabase .btn-utama {
+            height: 44px !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            display: inline-flex !important;
+            flex-direction: row !important; 
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 18px !important;
+            border-radius: 10px !important; 
+            white-space: nowrap !important; 
+            line-height: normal !important;
+            gap: 8px !important;
+            align-self: center !important; /* 🎯 PAKSA DI TENGAH VERTIKAL */
+        }
+
+        /* FIX 4: KOTAK NILAI (100) & Tombol WA Official */
+        .badge-score {
+            height: 32px !important;
+            min-width: 44px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            margin: 0 auto !important;
+        }
+
+        #tabelRiwayat .wa-btn {
+            height: 32px !important;
+            width: 34px !important;
+            min-width: 34px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            border-radius: 6px !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+            background-color: #25D366 !important; /* 🔥 Warna Hijau Resmi WhatsApp 🔥 */
+            color: white !important; /* Warna ikon SVG menjadi putih bersih */
+            border: none !important;
+            cursor: pointer !important;
+            transition: transform 0.2s ease, opacity 0.2s ease !important;
+        }
+
+        #tabelRiwayat .wa-btn:hover {
+            opacity: 0.85 !important;
+            transform: scale(1.08) !important;
+        }
     </style>
 </head>
 <body>
@@ -390,7 +476,7 @@
                 <div class="card" style="margin-bottom: 40px;">
                     
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                        <label style="margin:0; font-weight:bold; font-size:14px; flex: 1;">Mode Sumber Data</label>
+                        <label style="margin:0; font-weight:bold; font-size:14px; flex: 1;">Sumber Data</label>
                         
                         <div style="flex: 1; width: 100%; margin-top: -5px;">
                             <select id="modeSumberData" class="input-css" style="margin:0; font-size:12px;" onchange="ubahModeSumberData()">
