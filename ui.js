@@ -357,3 +357,88 @@ function switchSetelanTab(tabName) {
         document.getElementById('set-siswa').classList.add('active');
     }
 }
+
+// ==================== ENGINE DROPDOWN CUSTOM ====================
+function sulapMenjadiCustomDropdown(selectId) {
+    const selectAsli = document.getElementById(selectId);
+    if (!selectAsli || selectAsli.dataset.customized) return;
+    
+    // 1. Sembunyikan Select Bawaan Browser
+    selectAsli.style.display = 'none';
+    selectAsli.dataset.customized = "true";
+    
+    // 2. Buat Wadah Custom
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-select-wrapper';
+    selectAsli.parentNode.insertBefore(wrapper, selectAsli.nextSibling);
+    
+    const trigger = document.createElement('div');
+    trigger.className = 'custom-select-trigger';
+    
+    const optionsList = document.createElement('div');
+    optionsList.className = 'custom-options';
+    
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(optionsList);
+    
+    // 3. Fungsi Render Ulang (Penting untuk data dinamis seperti Supabase & Profil)
+    function renderCustomUI() {
+        const selectedOpt = selectAsli.options[selectAsli.selectedIndex];
+        
+        // Update Teks Tombol
+        trigger.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${selectedOpt ? selectedOpt.text : 'Pilih...'}</span> 
+            <svg class="arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+        
+        // Buat List Menu
+        optionsList.innerHTML = '';
+        Array.from(selectAsli.options).forEach((opt, index) => {
+            const optEl = document.createElement('div');
+            optEl.className = 'custom-option' + (opt.selected ? ' selected' : '');
+            optEl.innerText = opt.text;
+            
+            // Event Saat Item Diklik
+            optEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectAsli.selectedIndex = index;
+                wrapper.classList.remove('open');
+                renderCustomUI();
+                selectAsli.dispatchEvent(new Event('change')); // Memicu onchange asli
+            });
+            optionsList.appendChild(optEl);
+        });
+    }
+    
+    renderCustomUI(); // Render pertama kali
+    
+    // 4. Animasi Buka/Tutup
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Tutup dropdown lain yang sedang terbuka
+        document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+            if(w !== wrapper) w.classList.remove('open');
+        });
+        wrapper.classList.toggle('open');
+    });
+    
+    // 5. OBSERVER AJAIB (Mendeteksi jika ada <option> baru masuk dari Supabase)
+    const observer = new MutationObserver(() => { renderCustomUI(); });
+    observer.observe(selectAsli, { childList: true, subtree: true });
+    
+    // 6. Deteksi perubahan value dari script lain
+    selectAsli.addEventListener('change', () => { renderCustomUI(); });
+}
+
+// Menutup dropdown jika klik di luar area
+document.addEventListener('click', () => {
+    document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+});
+
+// Menjalankan mesin setelah halaman siap
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        sulapMenjadiCustomDropdown('modeSumberData');
+        sulapMenjadiCustomDropdown('pilihKelasSupabase');
+        sulapMenjadiCustomDropdown('sistemPenilaian');
+        sulapMenjadiCustomDropdown('pilihProfil');
+    }, 800); // Diberi delay sedikit agar UI asli termuat dulu
+});
