@@ -258,11 +258,19 @@ function prosesDeteksiKertas(scanMode = 'manual') {
             let kunciAbjad = ['A', 'B', 'C', 'D', 'E'];
             let warnaOrange = new cv.Scalar(255, 165, 0, 255);
 
+            // 🔥 RADAR KALIBRASI DIBUKA 🔥
+            console.log("=========================================");
+            console.log("MENDETEKSI KOORDINAT LJK BARU...");
+            
             semuaBulatanHitam.forEach(b => {
                 let pX = b.x / lebarMaksimal; let pY = b.y / tinggiMaksimal;
+                
+                // Merekam semua titik yang tertangkap kamera
+                console.log(`[TITIK BULATAN] pX: ${pX.toFixed(4)} | pY: ${pY.toFixed(4)}`);
+
                 if (pY < 0.13 || pY > 0.97 || pX < 0.05 || pX > 0.95) return; 
 
-                let rawRow = (pY - 0.180) / 0.0318; let row = Math.round(rawRow);
+                let rawRow = (pY - 0.194) / 0.0318; let row = Math.round(rawRow);
                 if (row < 0) row = 0; if (row > 24) row = 24;
 
                 if (pX < 0.38) { 
@@ -291,6 +299,7 @@ function prosesDeteksiKertas(scanMode = 'manual') {
                     }
                 }
             });
+            console.log("=========================================");
 
             let idSiswaFinal = idSiswaArray.join(''); const idValid = /^\d{5}$/.test(idSiswaFinal);
             

@@ -50,7 +50,7 @@
         .petunjuk-item { display: flex; align-items: center; gap: 5px; }
 
         .pg-wrapper { width: max-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; margin-bottom: 5px; }
-        .pg-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px;}
+        .pg-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px; color: #888; }
 
         /* SENTER GAP 20PX */
         .mesin-body { display: flex; justify-content: center; gap: 20px; } 
@@ -58,7 +58,7 @@
         
         .row-grid { height: 23px; display: flex; align-items: center; } 
         
-        .nomor { width: 22px; text-align: right; margin-right: 8px; font-size: 11px; font-weight: bold; }
+        .nomor { width: 22px; text-align: right; margin-right: 8px; font-size: 11px; font-weight: bold; color: #888; }
         .opsi-group { display: flex; gap: 7px; } 
         
         .opsi { width: 16px; height: 16px; border: 1px solid #aaa; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 9px; color: #999; box-sizing: border-box; font-weight: 600;}
@@ -71,22 +71,22 @@
         .contoh-centang::after { content: '✓'; position: absolute; color: black; font-size: 12px; font-weight: bold;}
 
         /* ================== STYLING AREA MANUSIA ================== */
-        .kop-surat { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; }
+        .kop-surat { display: flex; align-items: center; border-bottom: 3px solid black; padding-bottom: 8px; margin-bottom: 12px; }
         .kop-logo { width: 19mm; height: 19mm; object-fit: contain; margin-right: 15px; flex-shrink: 0; }
         .kop-teks { flex-grow: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
         
-        .kop-teks h3 { margin: 3px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
-        .kop-teks h4 { margin: 3px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
-        .kop-teks h1 { margin: 3px; font-size: 11pt; font-weight: bold; text-transform: uppercase; color: #111;}
-        .kop-teks p { margin: 3px; font-size: 7pt; color: #111; }
+        .kop-teks h3 { margin: 2px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
+        .kop-teks h4 { margin: 2px; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #222;}
+        .kop-teks h1 { margin: 2px; font-size: 11pt; font-weight: bold; text-transform: uppercase; color: #111;}
+        .kop-teks p { margin: 2px; font-size: 7pt; color: #111; }
 
-        .identitas-box { border: 2px solid black; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fafafa;}
-        .identitas-baris { display: flex; font-size: 12px; font-weight: bold; margin-bottom: 15px; align-items: flex-end;}
+        .identitas-box { border: 2px solid black; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px; background: #fafafa;}
+        .identitas-baris { display: flex; font-size: 12px; font-weight: bold; margin-bottom: 10px; align-items: flex-end;}
         .identitas-baris:last-child { margin-bottom: 0; }
         .identitas-label { width: 55px; } 
         .garis { border-bottom: 1px dashed black; flex-grow: 1; margin-left: 8px; height: 16px; position: relative;}
 
-        .uraian-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 12px; background: #eee; padding: 6px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px; position:relative; z-index:2;}
+        .uraian-title { width: 100%; box-sizing: border-box; font-size: 11.5px; font-weight: bold; margin-bottom: 8px; background: #eee; padding: 5px; text-align: center; border: 1px solid #ccc; letter-spacing: 1px; position:relative; z-index:2;}
         .uraian-container { display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
         .garis-uraian { border-bottom: 1px solid #888; height: 26px; width: 100%; position: relative;}
 
@@ -210,7 +210,7 @@
         let htmlCol1 = '<div style="position:relative; z-index:2;">';
         
         // Row 0: Title ID (Sejajar dengan No. 11)
-        htmlCol1 += '<div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: flex-end; padding-bottom:2px;"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px;">NO. PESERTA</span></div>';
+        htmlCol1 += '<div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: flex-end; padding-bottom:2px;"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px; color:#888;">NO. PESERTA</span></div>';
         
         // Row 1: Gap Spacer
         htmlCol1 += '<div class="row-grid"></div>';
@@ -231,7 +231,7 @@
         htmlCol1 += '<div class="row-grid"></div>'; 
 
         // Row 14: Title NO. SOAL (Diangkat 11px ke atas agar pas di tengah-tengah ruang kosong)
-        htmlCol1 += '<div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: center; transform: translateY(-11px);"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px;">NO. SOAL</span></div>';
+        htmlCol1 += '<div class="row-grid" style="padding-left: 30px; justify-content: center; align-items: center; transform: translateY(-11px);"><span style="font-size:10.5px; font-weight:bold; letter-spacing:0.5px; color:#888;">NO. SOAL</span></div>';
 
         // Row 15 s/d 24: Soal 1 - 10
         for(let i=1; i<=10; i++){
