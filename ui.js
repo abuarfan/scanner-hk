@@ -389,7 +389,26 @@ function toggleDarkMode() {
     if (isDark) { localStorage.setItem('temaLJK', 'dark'); if(btn) btn.innerHTML = '☀️'; } else { localStorage.setItem('temaLJK', 'light'); if(btn) btn.innerHTML = '🌙'; }
 }
 if (localStorage.getItem('temaLJK') === 'dark') { document.body.classList.add('dark-mode'); window.addEventListener('DOMContentLoaded', () => { let btn = document.getElementById('btnDarkMode'); if(btn) btn.innerHTML = '☀️'; }); }
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Gagal:', err)); }); }
+// 🔥 MESIN PEMAKSA UPDATE SERVICE WORKER 🔥
+if ('serviceWorker' in navigator) { 
+    window.addEventListener('load', () => { 
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            // Paksa browser mengecek file sw.js ke server setiap kali aplikasi dibuka!
+            reg.update();
+            
+            // Jika ada update terdeteksi, beritahu pengguna untuk refresh
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        Toast.fire({ icon: 'info', title: 'Update baru tersedia! Memuat ulang...', timer: 3000 });
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                };
+            };
+        }).catch(err => console.log('SW Gagal:', err)); 
+    }); 
+}
 let penahanPrompt; const bannerInstall = document.getElementById('bannerInstall');
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); penahanPrompt = e; if (!window.matchMedia('(display-mode: standalone)').matches && bannerInstall) bannerInstall.style.display = 'block'; });
 async function installAplikasi() {
