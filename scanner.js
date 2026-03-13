@@ -132,8 +132,8 @@ function toggleAutoScan() {
         if(isAuto) {
             gagalScanCount = 0; 
             
-            // 🔥 TAMPILAN AUTO-SCAN (Elegan, putus-putus, seolah sedang "bekerja") 🔥
-            btnAmbil.innerHTML = "⚡ Memindai Otomatis...";
+            // 🔥 TAMPILAN AUTO-SCAN (SVG Petir Premium) 🔥
+            btnAmbil.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Memindai...`;
             btnAmbil.disabled = true;
             btnAmbil.style.backgroundColor = "var(--bg-input)";
             btnAmbil.style.color = "var(--primary)";
@@ -143,8 +143,8 @@ function toggleAutoScan() {
             
             autoScanTimer = setInterval(ambilFotoOtomatis, 1000); 
         } else {
-            // 🔥 TAMPILAN MANUAL (Solid, tegas, memancing untuk diklik) 🔥
-            btnAmbil.innerHTML = "📸 Jepret Manual";
+            // 🔥 TAMPILAN MANUAL (Dikembalikan ke SVG Kamera Premium, bukan emoji!) 🔥
+            btnAmbil.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> Jepret Manual`;
             btnAmbil.disabled = false;
             btnAmbil.style.backgroundColor = "var(--primary)";
             btnAmbil.style.color = "white";
