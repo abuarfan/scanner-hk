@@ -296,7 +296,8 @@ function tampilkanInvestigasi() {
 
             for (let k = 0; k < 60; k++) {
                 let r1 = s1.rincian[k]; let r2 = s2.rincian[k];
-                if (r1 && r2 && (r1.status === "SALAH" || r1.status === "GANDA") && r1.status === r2.status && r1.jawaban === r2.jawaban) {
+                // 🔥 FIX: Gunakan toUpperCase() agar kebal dari perbedaan huruf besar/kecil 🔥
+                if (r1 && r2 && (r1.status.toUpperCase() === "SALAH" || r1.status.toUpperCase() === "GANDA") && r1.status === r2.status && r1.jawaban === r2.jawaban) {
                     salahSama++; 
                     detailSoal.push(`No.${k+1}(${r1.jawaban})`);
                 }
@@ -491,7 +492,7 @@ function downloadExcel() {
     Toast.fire({ icon: 'success', title: 'File Excel Berhasil Diunduh!' });
 }
 
-// ==================== FITUR 3: MESIN CETAK REKAP KELAS (PDF) ====================
+// ==================== FITUR MESIN CETAK REKAP KELAS (PDF) ====================
 function cetakRekapKelas() {
     if (!riwayatData || riwayatData.length === 0) return Toast.fire({icon: 'warning', title: 'Belum ada data!'});
 
