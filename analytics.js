@@ -321,7 +321,7 @@ function tampilkanInvestigasi() {
     } else {
         laporanCurang.sort((a, b) => b.jumlahSama - a.jumlahSama);
         htmlReport += `<p style="font-size:13px; margin-top:0; color:var(--text-main);">Ditemukan pasangan dengan pola jawaban <b>SALAH</b> yang identik (≥4 Soal):</p>
-        <div style="max-height: 350px; overflow-y: auto; padding-right: 5px;">`;
+        <div style="padding-right: 5px;">`;
         
         laporanCurang.forEach((item, idx) => { 
             htmlReport += `<div style="background:var(--bg-input); padding:12px; margin-bottom:10px; border-left:4px solid var(--danger); border-radius:8px; font-size:13px;">
