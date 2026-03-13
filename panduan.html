@@ -241,7 +241,14 @@
         // Membaca memori utama aplikasi agar temanya selaras
         if (localStorage.getItem('temaLJK') === 'dark') {
             document.body.classList.add('dark-mode');
+            
+            // 🔥 Paksa Status Bar HP jadi hitam elegan di mode gelap 🔥
+            let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                metaThemeColor.setAttribute("content", "#1C1C1E");
+            }
         }
     </script>
+</body>
 </body>
 </html>
