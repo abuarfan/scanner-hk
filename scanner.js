@@ -2,6 +2,8 @@
 let videoTrack = null;     
 let isSenterNyala = false; 
 let gagalScanCount = 0;
+let daftarKameraBelakang = []; 
+let indexKameraAktif = 0;
 
 function bersihkanMemoriCV(...mats) {
     mats.forEach(mat => { if (mat && typeof mat.delete === 'function') { try { mat.delete(); } catch(e) {} } });
@@ -9,13 +11,48 @@ function bersihkanMemoriCV(...mats) {
 
 async function mulaiKamera() {
     try {
+        let constraintVideo = { facingMode: "environment" };
+
+        // 🎯 Jika kita sudah punya daftar lensa dan memilih ID spesifik
+        if (daftarKameraBelakang.length > 0 && daftarKameraBelakang[indexKameraAktif]) {
+            constraintVideo = { deviceId: { exact: daftarKameraBelakang[indexKameraAktif].deviceId } };
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({ 
             audio: false, 
-            video: { facingMode: "environment" } 
+            video: constraintVideo 
         });
         
         videoElement.srcObject = stream;
         videoTrack = stream.getVideoTracks()[0];
+
+        // 🌟 JAMU ANTI BURAM: Paksa hardware mengaktifkan sensor Auto-Focus! 🌟
+        try {
+            await videoTrack.applyConstraints({
+                advanced: [{ focusMode: "continuous" }]
+            });
+        } catch(err) { console.log("Lensa ini tidak merespon paksaan fokus manual."); }
+        
+        // 🔍 Deteksi jumlah lensa belakang saat pertama kali nyala
+        if (daftarKameraBelakang.length === 0) {
+            let devices = await navigator.mediaDevices.enumerateDevices();
+            // Kumpulkan kamera yang namanya punya unsur "back", "belakang", atau "environment"
+            daftarKameraBelakang = devices.filter(d => 
+                d.kind === 'videoinput' && 
+                (d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment') || d.label.toLowerCase().includes('belakang'))
+            );
+            
+            // Fallback: Jika HP pelit label, tangkap saja semua kamera yang ada
+            if (daftarKameraBelakang.length === 0) {
+                daftarKameraBelakang = devices.filter(d => d.kind === 'videoinput');
+            }
+        }
+
+        // Tampilkan tombol Switch jika HP ini ternyata punya banyak lensa
+        let btnSwitch = document.getElementById('btnSwitchKamera');
+        if (btnSwitch) {
+            btnSwitch.style.display = daftarKameraBelakang.length > 1 ? 'flex' : 'none';
+        }
         
         document.getElementById('wadahKamera').style.display = 'block';
         document.getElementById('btnNyalakan').style.display = 'none';
@@ -23,12 +60,10 @@ async function mulaiKamera() {
         document.getElementById('kanvasHasil').style.display = 'none';
         document.getElementById('hasilUjian').innerHTML = '';
         
-        // 🔥 TERAPKAN MEMORI SENTER JIKA SEBELUMNYA SUDAH DINYALAKAN 🔥
         setTimeout(async () => {
             if (videoTrack && isSenterNyala) {
-                try {
-                    await videoTrack.applyConstraints({ advanced: [{ torch: true }] });
-                } catch(e) { console.log("Senter tidak didukung perangkat ini"); }
+                try { await videoTrack.applyConstraints({ advanced: [{ torch: true }] }); } 
+                catch(e) { console.log("Senter tidak didukung lensa ini"); }
             }
         }, 500);
 
@@ -57,6 +92,32 @@ async function toggleSenter() {
         try { await videoTrack.applyConstraints({ advanced: [{ torch: isSenterNyala }] }); } 
         catch (err) { console.error('Senter gagal dinyalakan:', err); }
     }
+}
+
+// 🔥 FUNGSI PEMINDAH LENSA KAMERA 🔥
+async function gantiLensaKamera() {
+    if (daftarKameraBelakang.length <= 1) return;
+    
+    // Geser index ke kamera berikutnya
+    indexKameraAktif++;
+    if (indexKameraAktif >= daftarKameraBelakang.length) indexKameraAktif = 0;
+    
+    Toast.fire({ icon: 'info', title: `Beralih ke Lensa ${indexKameraAktif + 1}...` });
+    
+    // Matikan hardware kamera yang sedang aktif
+    if (videoTrack) videoTrack.stop();
+    if (autoScanTimer) clearInterval(autoScanTimer);
+    
+    // Reset memori Senter karena lensa baru butuh perintah baru
+    isSenterNyala = false; 
+    let btnSenter = document.getElementById('btnSenter');
+    if(btnSenter) {
+        btnSenter.style.color = "var(--text-main)";
+        btnSenter.style.borderColor = "var(--border)";
+    }
+
+    // Nyalakan ulang menggunakan lensa baru
+    mulaiKamera();
 }
 
 function toggleAutoScan() {
