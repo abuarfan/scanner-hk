@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panduan - LJK Scanner Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS APPLE / NOTION MINIMALIST STYLE --- */
+        :root { 
+            --primary: #007AFF; 
+            --success: #34C759; 
+            --danger: #FF3B30; 
+            --warning: #FF9500; 
+            
+            --bg-body: #F4F4F7; 
+            --bg-card: #FFFFFF; 
+            --bg-input: #F9FAFB;
+            --text-main: #1C1C1E; 
+            --text-muted: #8E8E93;
+            --border: #E5E5EA;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #000000; 
+                --bg-card: #1C1C1E; 
+                --bg-input: #2C2C2E;
+                --text-main: #F2F2F7; 
+                --text-muted: #AEAEB2;
+                --border: #38383A;
+                --shadow: 0 4px 20px rgba(0,0,0,0.5);
+            }
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+        }
+        
+        .header { 
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: var(--bg-card); 
+            box-shadow: 0 1px 0 var(--border); 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+        }
+        .header h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        
+        .btn-back {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-back:active { transform: scale(0.9); }
+
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 60px; }
+        
+        .card { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 25px; 
+            box-shadow: var(--shadow); 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border);
+        }
+
+        h1 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 5px; color: var(--primary); letter-spacing: -1px;}
+        .subtitle { text-align: center; font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 0; margin-bottom: 30px; }
+
+        h3 { font-size: 16px; font-weight: 700; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+        h4 { font-size: 14px; font-weight: 700; margin-top: 20px; margin-bottom: 8px; color: var(--text-main); }
+        
+        ul { margin-top: 5px; padding-left: 20px; color: var(--text-muted); font-size: 14px;}
+        li { margin-bottom: 8px; }
+        strong { color: var(--text-main); }
+        
+        .badge {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        .icon-svg {
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="btn-back">
+            <svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+        <h2>Buku Panduan</h2>
+    </div>
+
+    <div class="container">
+        
+        <h1>LJK Scanner Pro v6.7</h1>
+        <p class="subtitle">Panduan Penggunaan Cerdas & Lengkap</p>
+
+        <div class="card">
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: 0;">Aplikasi <strong>LJK Scanner Pro</strong> adalah alat pemindai dan penganalisis Lembar Jawaban Komputer cerdas berbasis web. Aplikasi ini terbagi menjadi 3 menu utama di bagian bawah layar: <strong>Scan, Riwayat, dan Setelan</strong>.</p>
+        </div>
+
+        <div class="card">
+            <h3>
+                <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Langkah 1: Persiapan Awal
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Sebelum mulai memindai, pastikan Anda mengatur kelas dan kunci jawaban di tab <strong>Setelan</strong>.</p>
+            
+            <h4>1. Profil Kelas</h4>
+            <ul>
+                <li><strong>Pilih/Buat Profil:</strong> Anda bisa menyimpan pengaturan spesifik untuk setiap kelas atau mata pelajaran menggunakan dropdown "Profil Kelas".</li>
+                <li><strong>Simpan & Hapus:</strong> Klik ikon Centang untuk menyimpan profil baru, atau ikon Tempat Sampah untuk menghapus profil yang sedang aktif.</li>
+                <li><strong>Backup/Restore:</strong> Gunakan tombol <strong>Export Data</strong> (menyimpan data ke file <code>.json</code>) dan <strong>Restore Data</strong> (memulihkan data dari file) untuk mengamankan data Anda.</li>
+            </ul>
+
+            <h4>2. Kunci & Nilai (Sub-Menu)</h4>
+            <ul>
+                <li><strong>Input Kunci:</strong> Masukkan deretan kunci jawaban. Gunakan format khusus:
+                    <br><span class="badge">X</span> = Abaikan soal (soal dianulir).
+                    <br><span class="badge">*</span> = Bonus (semua jawaban dianggap benar).
+                    <br><span class="badge">A/B</span> = Opsi ganda (Contoh: A atau B dianggap benar).
+                </li>
+                <li><strong>Sistem Penilaian:</strong> Pilih metode perhitungan:
+                    <br>- Jumlah Benar (Skor Mentah)
+                    <br>- Persentase Standar (0 - 100)
+                    <br>- Try Out UTBK (+4, -1, 0)
+                    <br>- Bobot Soal (Bisa diatur bobot custom per nomor soal)
+                </li>
+                <li><strong>Batas KKM:</strong> Masukkan angka standar kelulusan kelas Anda (misal: 75).</li>
+            </ul>
+
+            <h4>3. Data Siswa (Sub-Menu)</h4>
+            <ul>
+                <li><strong>Data Server (Supabase):</strong> Menarik data otomatis dari server utama jika tersedia.</li>
+                <li><strong>Upload Excel:</strong> Menggunakan file <code>.xlsx</code> jika server sedang offline.</li>
+                <li><strong>Ketik Manual:</strong> Masukkan data langsung dengan format <code>NIS=Nama Siswa</code> per baris.</li>
+            </ul>
+
+            <h4>4. Cetak LJK (Sub-Menu)</h4>
+            <ul>
+                <li>Anda bisa mengatur 4 Baris Kop Surat (Nama Ujian, Tahun Ajaran, Nama Sekolah, Alamat) dan mengunggah <strong>Logo Sekolah</strong>.</li>
+                <li>Klik tombol <strong>Cetak LJK</strong> untuk mencetak lembar kosong yang siap dibagikan ke siswa.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>
+                <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Langkah 2: Proses Pemindaian
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Buka tab <strong>Scan</strong> untuk mulai mengoreksi LJK.</p>
+
+            <h4>1. Pengaturan Fitur Scan</h4>
+            <ul>
+                <li><strong>Auto-Scan:</strong> Jika aktif, kamera akan otomatis menjepret saat LJK berhasil terbaca oleh mesin.</li>
+                <li><strong>Suara (TTS):</strong> Jika aktif, AI akan membacakan nama dan nilai siswa secara otomatis setelah berhasil di-scan.</li>
+            </ul>
+
+            <h4>2. Kontrol Kamera & Upload</h4>
+            <ul>
+                <li><strong>Nyalakan Kamera:</strong> Tekan tombol utama untuk membuka aliran video dari kamera belakang.</li>
+                <li><strong>Posisikan LJK:</strong> Pastikan <strong>4 Kotak Hitam</strong> di sudut kertas LJK masuk ke dalam area bingkai putus-putus biru di layar.</li>
+                <li><strong>Senter & Lensa:</strong> Gunakan ikon Senter untuk menyalakan lampu kilat di ruangan gelap. Jika HP Anda memiliki banyak kamera, gunakan ikon <strong>Tukar Lensa</strong> yang melayang di layar untuk mencari lensa yang paling fokus.</li>
+                <li><strong>Upload Foto:</strong> Mengoreksi LJK dari foto yang sudah ada di galeri perangkat Anda.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>
+                <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Langkah 3: Melihat Hasil & Analisis
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Setelah selesai memindai, buka tab <strong>Riwayat</strong> untuk melihat rekapitulasi kelas.</p>
+
+            <h4>1. Daftar Nilai (Sub-Menu)</h4>
+            <ul>
+                <li>Menampilkan tabel ringkasan nilai yang bisa diurutkan (Sort) dengan mengeklik judul kolomnya.</li>
+                <li><strong>Koreksi Manual:</strong> Jika ada kesalahan baca karena coretan kotor, <strong>klik pada baris nama siswa</strong> di tabel untuk mengubah jawabannya secara manual.</li>
+                <li><strong>Aksi Per Siswa:</strong> Klik ikon PDF (Merah) untuk mencetak Rapor Individu, atau ikon WhatsApp (Hijau) untuk mengirim rincian nilai langsung ke HP siswa/orang tua.</li>
+                <li><strong>Aksi Massal:</strong> Di bagian atas tabel, terdapat tombol untuk <strong>Reset</strong> data kelas, <strong>Share WA</strong> (Rekap Nilai Peringkat), <strong>Print</strong> (Rekap Tabel PDF), dan Download <strong>Excel</strong>.</li>
+            </ul>
+
+            <h4>2. Analisis (Sub-Menu)</h4>
+            <ul>
+                <li>Menampilkan dashboard visual berupa Nilai Rata-rata, Tertinggi, Terendah, dan <strong>Grafik Donat</strong> ketuntasan siswa.</li>
+                <li>Terdapat analisis butir soal mendalam seperti Tingkat Kesukaran (Sukar/Mudah) dan Daya Pembeda untuk mengevaluasi kualitas soal Anda.</li>
+            </ul>
+
+            <h4>3. Nyontek (Sub-Menu)</h4>
+            <ul>
+                <li>Fitur investigasi cerdas yang mendeteksi indikasi kecurangan dengan mencari persentase kesamaan jawaban salah di antara siswa.</li>
+            </ul>
+        </div>
+
+        <div class="card" style="border-color: var(--primary);">
+            <h3 style="color: var(--primary);">
+                <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Fitur Ekstra (Sangat Penting!)
+            </h3>
+            <ul>
+                <li><strong>Mode Gelap (Dark Mode):</strong> Klik ikon Bulan/Matahari di sudut kanan atas header untuk mengubah tema warna aplikasi agar nyaman di mata.</li>
+                <li><strong>Install App (Offline Mode):</strong> Klik tautan <em>"Install App"</em> pada banner biru di bagian atas (jika muncul) agar aplikasi ini masuk ke Home Screen HP Anda dan bisa dijalankan super cepat tanpa kuota internet layaknya aplikasi asli!</li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>
