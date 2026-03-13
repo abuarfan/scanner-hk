@@ -268,7 +268,7 @@ function cetakRapor(event, idSiswa) {
                 <p><b>_______________________</b></p>
             </div>
             <script>
-                window.onload = function() { setTimeout(function() { window.print(); window.close(); }, 800); }
+                window.onload = function() { setTimeout(function() { window.print(); }, 800); }
             <\/script>
         </body>
         </html>
@@ -555,7 +555,7 @@ function cetakRekapKelas() {
             <br><br><br>
             <p><b>_______________________</b></p>
         </div>
-        <script>window.onload=function(){setTimeout(function(){window.print();window.close();},800);}<\/script>
+        <script>window.onload=function(){setTimeout(function(){window.print();},800);}<\/script>
     </body></html>`;
     
     let win = window.open('', '_blank');
