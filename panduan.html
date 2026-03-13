@@ -22,16 +22,14 @@
             --shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-body: #000000; 
-                --bg-card: #1C1C1E; 
-                --bg-input: #2C2C2E;
-                --text-main: #F2F2F7; 
-                --text-muted: #AEAEB2;
-                --border: #38383A;
-                --shadow: 0 4px 20px rgba(0,0,0,0.5);
-            }
+        body.dark-mode {
+            --bg-body: #000000; 
+            --bg-card: #1C1C1E; 
+            --bg-input: #2C2C2E;
+            --text-main: #F2F2F7; 
+            --text-muted: #AEAEB2;
+            --border: #38383A;
+            --shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -125,7 +123,7 @@
 
     <div class="container">
         
-        <h1>LJK Scanner Pro v6.7</h1>
+        <h1>LJK Scanner Pro v7.5</h1>
         <p class="subtitle">Panduan Penggunaan Cerdas & Lengkap</p>
 
         <div class="card">
@@ -237,6 +235,11 @@
         </div>
 
     </div>
-
+    <script>
+        // Membaca memori utama aplikasi agar temanya selaras
+        if (localStorage.getItem('temaLJK') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>

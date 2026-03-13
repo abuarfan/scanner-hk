@@ -382,13 +382,36 @@ function kirimWA(event, nama, nilai, benar, salah, isLulus) {
     window.open(`https://api.whatsapp.com/send?text=${pesan}`, '_blank');
 }
 
+// 🔥 MESIN MODE GELAP & PEWARNA STATUS BAR HP 🔥
 function toggleDarkMode() {
     let body = document.body; let btn = document.getElementById('btnDarkMode'); body.classList.toggle('dark-mode');
     if(btn) { btn.style.transform = 'rotate(360deg)'; setTimeout(() => btn.style.transform = 'rotate(0deg)', 200); }
     let isDark = body.classList.contains('dark-mode');
-    if (isDark) { localStorage.setItem('temaLJK', 'dark'); if(btn) btn.innerHTML = '☀️'; } else { localStorage.setItem('temaLJK', 'light'); if(btn) btn.innerHTML = '🌙'; }
+    
+    // Targetkan meta tag theme-color di index.html
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    
+    if (isDark) { 
+        localStorage.setItem('temaLJK', 'dark'); 
+        if(btn) btn.innerHTML = '☀️'; 
+        if(metaThemeColor) metaThemeColor.setAttribute("content", "#1C1C1E"); // Status bar ikut gelap
+    } else { 
+        localStorage.setItem('temaLJK', 'light'); 
+        if(btn) btn.innerHTML = '🌙'; 
+        if(metaThemeColor) metaThemeColor.setAttribute("content", "#ffffff"); // Status bar ikut putih
+    }
 }
-if (localStorage.getItem('temaLJK') === 'dark') { document.body.classList.add('dark-mode'); window.addEventListener('DOMContentLoaded', () => { let btn = document.getElementById('btnDarkMode'); if(btn) btn.innerHTML = '☀️'; }); }
+
+// Deteksi saat aplikasi baru dibuka
+if (localStorage.getItem('temaLJK') === 'dark') { 
+    document.body.classList.add('dark-mode'); 
+    window.addEventListener('DOMContentLoaded', () => { 
+        let btn = document.getElementById('btnDarkMode'); if(btn) btn.innerHTML = '☀️'; 
+        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if(metaThemeColor) metaThemeColor.setAttribute("content", "#1C1C1E"); // Status bar ikut gelap
+    }); 
+}
+
 // 🔥 MESIN PEMAKSA UPDATE SERVICE WORKER 🔥
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
