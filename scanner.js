@@ -564,7 +564,7 @@ function gambarUlangCrop() {
 
     // Gambar 4 Titik Merah Interaktif
     titikManual.forEach(pt => {
-        cropCtx.beginPath(); cropCtx.arc(pt.x, pt.y, 25, 0, Math.PI*2);
+        cropCtx.beginPath(); cropCtx.arc(pt.x, pt.y, 11, 0, Math.PI*2);
         cropCtx.fillStyle = '#FF3B30'; cropCtx.fill();
         cropCtx.lineWidth = 4; cropCtx.strokeStyle = '#FFFFFF'; cropCtx.stroke();
     });
@@ -582,7 +582,7 @@ function initDragEvents() {
     cropCanvas.onmousedown = cropCanvas.ontouchstart = (e) => {
         e.preventDefault(); let pos = getMousePos(e);
         // 🔥 FIX: Perbesar daya magnet (Hitbox) dari 60px menjadi 120px 🔥
-        dragIndex = titikManual.findIndex(pt => Math.hypot(pt.x - pos.x, pt.y - pos.y) < 120);
+        dragIndex = titikManual.findIndex(pt => Math.hypot(pt.x - pos.x, pt.y - pos.y) < 180);
     };
     cropCanvas.onmousemove = cropCanvas.ontouchmove = (e) => {
         if(dragIndex === -1) return;
