@@ -522,10 +522,20 @@ function bukaCropManual() {
         cropCanvas.width = imgCrop.width; cropCanvas.height = imgCrop.height;
         let w = cropCanvas.width; let h = cropCanvas.height;
         
-        // Simpan 4 titik default (agak menjorok ke dalam agar mudah ditarik)
+        // 🔥 PERBAIKI: Beri offset (jarak) agar tidak pas di pojok 🔥
+        // Kita gunakan 10% dari lebar dan tinggi sebagai jarak "pengait"
+        let offW = w * 0.10; 
+        let offH = h * 0.10; 
+
         titikManual = [
-            {x: w*0.1, y: h*0.1}, {x: w*0.9, y: h*0.1},
-            {x: w*0.9, y: h*0.9}, {x: w*0.1, y: h*0.9}
+            // Kiri Atas (nongol)
+            {x: offW, y: offH}, 
+            // Kanan Atas (nongol)
+            {x: w - offW, y: offH},
+            // Kanan Bawah (nongol)
+            {x: w - offW, y: h - offH},
+            // Kiri Bawah (nongol)
+            {x: offW, y: h - offH}
         ];
         
         initDragEvents(); gambarUlangCrop();
