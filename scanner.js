@@ -582,7 +582,7 @@ function initDragEvents() {
     cropCanvas.onmousedown = cropCanvas.ontouchstart = (e) => {
         e.preventDefault(); let pos = getMousePos(e);
         // 🔥 FIX: Perbesar daya magnet (Hitbox) dari 60px menjadi 120px 🔥
-        dragIndex = titikManual.findIndex(pt => Math.hypot(pt.x - pos.x, pt.y - pos.y) < 180);
+        dragIndex = titikManual.findIndex(pt => Math.hypot(pt.x - pos.x, pt.y - pos.y) < 210);
     };
     cropCanvas.onmousemove = cropCanvas.ontouchmove = (e) => {
         if(dragIndex === -1) return;
