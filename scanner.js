@@ -443,15 +443,17 @@ function prosesDeteksiKertas(scanMode = 'manual', manualPoints = null) {
             bacaNilaiAI(namaSiswa, nilaiAkhir, scanMode);
             
             // 🔥 FITUR 5: LEDAKAN CONFETTI JIKA NILAI SEMPURNA (100) 🔥
-            if (nilaiAkhir === 100) {
+            if (Number(nilaiAkhir) === 100) {
                 if (typeof confetti === 'function') {
                     confetti({
                         particleCount: 200,
                         spread: 100,
                         origin: { y: 0.5 }, // Meledak dari tengah layar
                         colors: ['#34C759', '#007AFF', '#FFD60A', '#FF3B30'],
-                        zIndex: 9999
+                        zIndex: 99999 // Tambah zIndex agar tidak tertutup elemen lain
                     });
+                } else {
+                    console.log("Library Confetti belum siap.");
                 }
             }
             
