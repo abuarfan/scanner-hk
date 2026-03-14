@@ -642,6 +642,19 @@
         </button>
     </div>
 
+    <div id="modalCropManual" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; flex-direction:column; align-items:center; justify-content:center; touch-action:none;">
+        <h3 style="color:white; margin-top:20px; font-size:16px; text-align:center;">Geser 4 Titik Merah ke Kotak Hitam LJK</h3>
+        
+        <div style="position:relative; width:90vw; height:65vh; margin:15px auto; display:flex; justify-content:center; align-items:center;">
+            <canvas id="canvasCrop" style="max-width:100%; max-height:100%; border:2px solid var(--primary); border-radius:8px; box-shadow:0 0 20px rgba(0,122,255,0.3);"></canvas>
+        </div>
+        
+        <div style="display:flex; gap:15px; margin-top:10px;">
+            <button onclick="tutupCropManual()" style="padding:12px 25px; border-radius:12px; background:#333; color:white; border:none; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">Batal</button>
+            <button onclick="prosesCropManual()" style="padding:12px 25px; border-radius:12px; background:var(--primary); color:white; border:none; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(0,122,255,0.4);">Scan Sekarang</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script src="storage.js"></script>

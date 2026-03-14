@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==================== OPENCV ENGINE DENGAN PARSER AJAIB ====================
-function prosesDeteksiKertas(scanMode = 'manual') {
+function prosesDeteksiKertas(scanMode = 'manual', manualPoints = null) {
     let isAutoMode = (scanMode === 'auto');
     if (typeof cv === 'undefined') { if(!isAutoMode) Toast.fire({ icon: 'info', title: 'OpenCV sedang dimuat...' }); return 'failed'; }
     
@@ -266,16 +266,21 @@ function prosesDeteksiKertas(scanMode = 'manual') {
     cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0); cv.threshold(dst, dst, 120, 255, cv.THRESH_BINARY_INV);
     
     let contours = new cv.MatVector(); let hierarchy = new cv.Mat(); 
-    cv.findContours(dst, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
-
     let kumpulanTitik = []; 
-    for (let i = 0; i < contours.size(); ++i) {
-        let cnt = contours.get(i); let area = cv.contourArea(cnt); let rect = cv.boundingRect(cnt);
-        let rasio = rect.width / rect.height; let kepadatan = area / (rect.width * rect.height);
-        if (area > 100 && area < 5000 && rasio > 0.6 && rasio < 1.4 && kepadatan > 0.81) {
-            kumpulanTitik.push({ x: rect.x + (rect.width / 2), y: rect.y + (rect.height / 2) });
+
+    // 🔥 JARING PENGAMAN: Jika user pakai titik manual, bypass sistem otomatis OpenCV 🔥
+    if (manualPoints) {
+        kumpulanTitik = manualPoints;
+    } else {
+        cv.findContours(dst, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+        for (let i = 0; i < contours.size(); ++i) {
+            let cnt = contours.get(i); let area = cv.contourArea(cnt); let rect = cv.boundingRect(cnt);
+            let rasio = rect.width / rect.height; let kepadatan = area / (rect.width * rect.height);
+            if (area > 100 && area < 5000 && rasio > 0.6 && rasio < 1.4 && kepadatan > 0.81) {
+                kumpulanTitik.push({ x: rect.x + (rect.width / 2), y: rect.y + (rect.height / 2) });
+            }
+            cnt.delete(); 
         }
-        cnt.delete(); 
     }
 
     if (kumpulanTitik.length >= 4) {
@@ -484,8 +489,96 @@ function prosesDeteksiKertas(scanMode = 'manual') {
 
             bersihkanMemoriCV(titikAsal, titikTujuan, matriksTransformasi, gambarPotongan, dstPotongan, contoursPotongan, hierarchyPotongan, src, dst, gambarHasil, contours, hierarchy);
             return statusProses;
-        } else { if(!isAutoMode) { putarSuara(false); Toast.fire({ icon: 'warning', title: 'LJK miring / terpotong!' }); } }
-    } else { if(!isAutoMode) { putarSuara(false); Toast.fire({ icon: 'error', title: 'Kotak hitam tidak terlihat.' }); } }
+        } else { 
+            if(!isAutoMode) { 
+                putarSuara(false); 
+                Swal.fire({ title: 'LJK Miring', text: 'Sistem kesulitan memotong LJK. Bantu posisikan manual?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Posisikan Manual' })
+                .then((res) => { if(res.isConfirmed) bukaCropManual(); });
+            } 
+        }
+    } else { 
+        if(!isAutoMode) { 
+            putarSuara(false); 
+            Swal.fire({ title: 'Kotak Tidak Terbaca', text: 'Kamera gagal menemukan 4 kotak hitam. Posisikan titik secara manual?', icon: 'error', showCancelButton: true, confirmButtonText: 'Posisikan Manual' })
+            .then((res) => { if(res.isConfirmed) bukaCropManual(); });
+        } 
+    }
     
     bersihkanMemoriCV(src, dst, gambarHasil, contours, hierarchy); return 'failed';
+}
+
+// ==================== FALLBACK UI: MANUAL CROP ====================
+let cropCanvas = null; let cropCtx = null;
+let imgCrop = new Image();
+let titikManual = []; let dragIndex = -1;
+
+function bukaCropManual() {
+    document.getElementById('modalCropManual').style.display = 'flex';
+    cropCanvas = document.getElementById('canvasCrop'); cropCtx = cropCanvas.getContext('2d');
+    
+    // Ambil gambar terakhir yang membeku dari kanvas utama
+    imgCrop.src = canvasElement.toDataURL('image/jpeg', 0.9);
+    imgCrop.onload = () => {
+        cropCanvas.width = imgCrop.width; cropCanvas.height = imgCrop.height;
+        let w = cropCanvas.width; let h = cropCanvas.height;
+        
+        // Simpan 4 titik default (agak menjorok ke dalam agar mudah ditarik)
+        titikManual = [
+            {x: w*0.1, y: h*0.1}, {x: w*0.9, y: h*0.1},
+            {x: w*0.9, y: h*0.9}, {x: w*0.1, y: h*0.9}
+        ];
+        
+        initDragEvents(); gambarUlangCrop();
+    }
+}
+
+function tutupCropManual() { document.getElementById('modalCropManual').style.display = 'none'; }
+
+function prosesCropManual() {
+    tutupCropManual();
+    Toast.fire({ icon: 'info', title: 'Memproses titik manual...' });
+    setTimeout(() => { prosesDeteksiKertas('manual', titikManual); }, 300); // Panggil ulang mesin dengan suapan manual!
+}
+
+function gambarUlangCrop() {
+    cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+    cropCtx.drawImage(imgCrop, 0, 0);
+    
+    // Gambar bayangan area yang akan dipotong
+    cropCtx.beginPath();
+    cropCtx.moveTo(titikManual[0].x, titikManual[0].y); cropCtx.lineTo(titikManual[1].x, titikManual[1].y);
+    cropCtx.lineTo(titikManual[2].x, titikManual[2].y); cropCtx.lineTo(titikManual[3].x, titikManual[3].y);
+    cropCtx.closePath();
+    cropCtx.lineWidth = 4; cropCtx.strokeStyle = 'rgba(52, 199, 89, 0.8)'; cropCtx.stroke();
+    cropCtx.fillStyle = 'rgba(52, 199, 89, 0.2)'; cropCtx.fill();
+
+    // Gambar 4 Titik Merah Interaktif
+    titikManual.forEach(pt => {
+        cropCtx.beginPath(); cropCtx.arc(pt.x, pt.y, 25, 0, Math.PI*2);
+        cropCtx.fillStyle = '#FF3B30'; cropCtx.fill();
+        cropCtx.lineWidth = 4; cropCtx.strokeStyle = '#FFFFFF'; cropCtx.stroke();
+    });
+}
+
+function getMousePos(evt) {
+    let rect = cropCanvas.getBoundingClientRect();
+    let scaleX = cropCanvas.width / rect.width; let scaleY = cropCanvas.height / rect.height;
+    let clientX = evt.clientX || (evt.touches && evt.touches[0].clientX);
+    let clientY = evt.clientY || (evt.touches && evt.touches[0].clientY);
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+}
+
+function initDragEvents() {
+    cropCanvas.onmousedown = cropCanvas.ontouchstart = (e) => {
+        e.preventDefault(); let pos = getMousePos(e);
+        // Cari titik terdekat (radius sentuh 60px)
+        dragIndex = titikManual.findIndex(pt => Math.hypot(pt.x - pos.x, pt.y - pos.y) < 60);
+    };
+    cropCanvas.onmousemove = cropCanvas.ontouchmove = (e) => {
+        if(dragIndex === -1) return;
+        e.preventDefault(); let pos = getMousePos(e);
+        titikManual[dragIndex].x = pos.x; titikManual[dragIndex].y = pos.y;
+        gambarUlangCrop();
+    };
+    cropCanvas.onmouseup = cropCanvas.ontouchend = cropCanvas.onmouseleave = () => { dragIndex = -1; };
 }
