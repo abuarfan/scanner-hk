@@ -117,7 +117,8 @@
         #bannerInstall { display: none; background: var(--primary); color: white; padding: 12px 20px; text-align: center; font-weight: 600; font-size: 13px; position: sticky; top: 62px; z-index: 9; box-shadow: 0 2px 10px rgba(0,122,255,0.3); }
         #bannerInstall span { text-decoration: underline; cursor: pointer; margin-left: 8px; }
         
-        canvas { display: none; }
+        /* 🔥 FIX: Hanya sembunyikan kanvas foto, jangan semua kanvas (agar Confetti bisa muncul!) 🔥 */
+        #kanvasFoto { display: none; }
 
         select.input-css {
             -webkit-appearance: none;
