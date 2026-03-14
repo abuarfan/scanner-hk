@@ -406,6 +406,53 @@ function restoreDataFromObject(data, mode = 'replace') {
     });
 }
 
+// ==================== EVENT LISTENER RESTORE FILE ====================
+document.getElementById('inputRestoreFile').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            let dataBackup = JSON.parse(event.target.result);
+            
+            // Jika tabel saat ini kosong, langsung masukkan saja tanpa ba-bi-bu
+            if (riwayatData.length === 0) {
+                restoreDataFromObject(dataBackup, 'replace');
+                return;
+            }
+
+            // Jika tabel saat ini ADA ISINYA, berikan pilihan ke Guru!
+            let jumlahSiswaBaru = Array.isArray(dataBackup.riwayat) ? dataBackup.riwayat.length : 0;
+            
+            Swal.fire({
+                title: 'Data Ditemukan',
+                text: `Saat ini ada ${riwayatData.length} data siswa di kelas ini. Apa yang ingin Anda lakukan dengan data backup baru (${jumlahSiswaBaru} siswa)?`,
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: '🔄 Gabungkan (Merge)',
+                denyButtonText: '⚠️ Timpa (Overwrite)',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#007AFF',
+                denyButtonColor: '#FF3B30'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    restoreDataFromObject(dataBackup, 'merge'); // Eksekusi mode gabung
+                } else if (result.isDenied) {
+                    restoreDataFromObject(dataBackup, 'replace'); // Eksekusi mode timpa
+                }
+            });
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({ icon: 'error', title: 'Gagal Membaca File', text: 'File json rusak atau tidak sesuai format LJK Scanner Pro.' });
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset input agar file yang sama bisa dipilih lagi jika mau
+});
+
 // ==================== PENGATURAN UMUM ====================
 function simpanRiwayat() {
     statistikSalah = Array(60).fill(0);

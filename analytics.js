@@ -88,20 +88,24 @@ function tampilkanStatistik() {
     let kunciTokens = typeof parseKunci === 'function' ? parseKunci(document.getElementById('inputKunci').value) : [];
 
     function genTabelStat(start, end) {
-        let t = `<table style="min-width:260px; font-size:11px; border-collapse: collapse; flex:1;">
+        // Tambahkan header tabel Distraktor
+        let t = `<table style="min-width:300px; font-size:11px; border-collapse: collapse; flex:1;">
             <thead>
                 <tr>
                     <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">No</th>
                     <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">Salah</th>
                     <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">Daya Pembeda</th>
-                    <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">Tingkat Kesukaran</th>
+                    <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">Kesukaran</th>
+                    <th style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">Distraktor</th>
                 </tr>
             </thead>
             <tbody>`;
+        
         for(let i = start; i < end; i++) {
             let tk = i < kunciTokens.length ? kunciTokens[i] : null;
             if (!tk || tk.includes('X')) {
-                t += `<tr style="opacity:0.4"><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">${i+1}</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td></tr>`;
+                // Tambah satu kolom kosong (-) untuk soal dianulir
+                t += `<tr style="opacity:0.4"><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">${i+1}</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td><td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border);">-</td></tr>`;
             } else {
                 let salah = statistikSalah[i] ? statistikSalah[i] : 0;
                 let colorSalah = salah > (totalSiswa / 2) ? 'var(--danger)' : (salah > 0 ? 'var(--warning)' : 'var(--success)');
@@ -126,11 +130,36 @@ function tampilkanStatistik() {
                 else if (persenBenar >= 30) { kriteriaTK = "🟡 Sedang"; colorTK = "var(--warning)"; }
                 else { kriteriaTK = "🔴 Sukar"; colorTK = "var(--danger)"; }
 
+                // 🔥 FITUR ULTIMATE: MESIN PELACAK DISTRAKTOR (PENGECOH) 🔥
+                let frekuensiJwb = { 'A':0, 'B':0, 'C':0, 'D':0, 'E':0 };
+                riwayatData.forEach(siswa => {
+                    if(siswa.rincian && siswa.rincian[i]) {
+                        let jwb = siswa.rincian[i].jawaban;
+                        let stat = siswa.rincian[i].status.toUpperCase();
+                        // Hanya hitung jika statusnya SALAH dan jawabannya adalah opsi tunggal (A/B/C/D/E)
+                        if (stat === "SALAH" && jwb !== "Kosong" && jwb !== "Ganda" && frekuensiJwb[jwb] !== undefined) {
+                            frekuensiJwb[jwb]++;
+                        }
+                    }
+                });
+
+                // Cari jawaban salah (opsi) mana yang paling banyak dipilih
+                let maxPilih = 0; let distraktor = "-";
+                for (let opsi in frekuensiJwb) {
+                    if (frekuensiJwb[opsi] > maxPilih) {
+                        maxPilih = frekuensiJwb[opsi];
+                        distraktor = `${opsi} (${maxPilih})`; // Contoh hasil: "C (12)"
+                    }
+                }
+                let colorDistraktor = maxPilih > 0 ? "var(--danger)" : "var(--text-muted)";
+
+                // Cetak baris data dengan tambahan kolom distraktor
                 t += `<tr>
                         <td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-muted);">${i+1}</td>
                         <td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:${colorSalah}; font-weight:bold;">${salah}</td>
                         <td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:${colorDP}; font-weight:bold;">${kriteriaDP}</td>
                         <td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:${colorTK}; font-weight:bold;">${kriteriaTK}</td>
+                        <td style="padding:6px 2px; text-align:center; border-bottom:1px solid var(--border); color:${colorDistraktor}; font-weight:bold;">${distraktor}</td>
                       </tr>`;
             }
         }
@@ -303,7 +332,12 @@ function tampilkanInvestigasi() {
                 }
             }
 
-            if (salahSama >= 4) { 
+            // 🔥 FITUR ULTIMATE: Custom Batas Radar Nyontek 🔥
+            let elBatas = document.getElementById('inputBatasNyontek');
+            let batasNyontek = elBatas ? parseInt(elBatas.value) : 4;
+
+            // FIX: Gunakan variabel 'salahSama' yang menghitung kemiripan
+            if (salahSama >= batasNyontek) { 
                 laporanCurang.push({ nama1: s1.nama, nama2: s2.nama, jumlahSama: salahSama, detail: detailSoal.join(', ') });
             }
         }

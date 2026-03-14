@@ -298,6 +298,35 @@
 
         // =========================================================
         window.onload = function() { setTimeout(function() { window.print(); }, 800); };
+        document.addEventListener("DOMContentLoaded", () => {
+            let logoBase64 = localStorage.getItem('logo1');
+            if (logoBase64) {
+                // Buat elemen bayangan raksasa
+                let watermark = document.createElement('div');
+                watermark.style.position = 'absolute';
+                watermark.style.top = '50%';
+                watermark.style.left = '50%';
+                watermark.style.transform = 'translate(-50%, -50%)';
+                watermark.style.width = '60%';
+                watermark.style.height = '60%';
+                watermark.style.backgroundImage = `url(${logoBase64})`;
+                watermark.style.backgroundSize = 'contain';
+                watermark.style.backgroundRepeat = 'no-repeat';
+                watermark.style.backgroundPosition = 'center';
+                
+                // Opacity tipis agar tidak mengganggu sensor OpenCV tapi mengganggu mesin Fotokopi
+                watermark.style.opacity = '0.08'; 
+                watermark.style.zIndex = '0';
+                watermark.style.pointerEvents = 'none'; // Tidak bisa diklik
+                
+                // Masukkan ke dalam kertas LJK
+                let kertas = document.querySelector('.kertas');
+                if(kertas) {
+                    kertas.style.position = 'relative'; // Pastikan kertas relative
+                    kertas.appendChild(watermark);
+                }
+            }
+        });
     </script>
 </body>
 </html>

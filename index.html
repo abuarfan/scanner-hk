@@ -273,6 +273,29 @@
             opacity: 0.85 !important;
             transform: scale(1.08) !important;
         }
+
+        /* 🔥 FIX: Memaksa SweetAlert (Popup) Tunduk pada Tema Gelap 🔥 */
+        body.dark-mode .swal2-popup { 
+            background-color: var(--bg-card) !important; 
+            color: var(--text-main) !important; 
+            border: 1px solid var(--border) !important;
+        }
+        body.dark-mode .swal2-title, 
+        body.dark-mode .swal2-html-container { 
+            color: var(--text-main) !important; 
+        }
+        body.dark-mode .swal2-input { 
+            background-color: var(--bg-input) !important; 
+            color: var(--text-main) !important; 
+            border-color: var(--border) !important; 
+        }
+        body.dark-mode .swal2-validation-message { 
+            background: var(--bg-input) !important; 
+            color: var(--danger) !important; 
+        }
+        body.dark-mode .swal2-close {
+            color: var(--text-muted) !important;
+        }
     </style>
 </head>
 <body>
@@ -438,6 +461,13 @@
             </div>
 
             <div id="sub-nyontek" class="sub-tab-content">
+                <div style="background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin: 0; font-size: 13px;">Batas Toleransi Nyontek</h4>
+                        <p style="margin: 3px 0 0 0; font-size: 11px; color: var(--text-muted);">Minimal jumlah soal salah yang persis sama.</p>
+                    </div>
+                    <input type="number" id="inputBatasNyontek" class="input-css" value="4" min="2" max="20" onchange="if(typeof renderNyontek === 'function') renderNyontek()" style="width: 70px; text-align: center; font-weight: bold; margin: 0; padding: 8px;">
+                </div>
                 <div id="wadahInvestigasi"></div>
             </div>
 

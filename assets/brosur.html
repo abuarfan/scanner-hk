@@ -6,50 +6,18 @@
     <title>LJK Scanner Pro - Brosur Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #007AFF;
-            --dark: #1C1C1E;
-            --light: #F4F4F7;
-            --text-main: #111;
-            --text-muted: #666;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+        :root { --primary: #007AFF; --dark: #1C1C1E; --light: #F4F4F7; --text-main: #111; --text-muted: #666; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: var(--light); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
 
         /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #1C1C1E 0%, #000000 100%);
-            color: white;
-            text-align: center;
-            padding: 80px 20px 40px 20px;
-            overflow: hidden;
-        }
-        .hero h1 {
-            font-size: 42px;
-            font-weight: 900;
-            letter-spacing: -1.5px;
-            margin-bottom: 15px;
-            background: -webkit-linear-gradient(#fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .hero { background: linear-gradient(135deg, #1C1C1E 0%, #000000 100%); color: white; text-align: center; padding: 80px 20px 40px 20px; overflow: hidden; }
+        .hero h1 { font-size: 42px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 15px; background: -webkit-linear-gradient(#fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { font-size: 18px; color: #aaa; max-width: 600px; margin: 0 auto 30px auto; }
         .hero .badge { background: var(--primary); color: white; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
-        .hero img { max-width: 90%; width: 400px; margin-top: 30px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5)); transition: transform 0.5s; }
-        .hero img:hover { transform: translateY(-10px); }
-
+        
         /* Feature Section */
         .section { padding: 80px 20px; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
         .section.reverse { flex-direction: row-reverse; }
-        
         .section-text { flex: 1; min-width: 300px; }
         .section-text h2 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 15px; color: var(--dark); }
         .section-text p { font-size: 16px; color: var(--text-muted); margin-bottom: 20px; }
@@ -60,11 +28,30 @@
         .section-img img { max-width: 100%; border-radius: 20px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15)); transition: transform 0.3s; }
         .section-img img:hover { transform: scale(1.03); }
 
-        /* Highlight Boxes */
-        .grid-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
-        .card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eaeaea; }
-        .card h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
-        .card p { font-size: 14px; color: var(--text-muted); }
+        /* Pricing Table */
+        .pricing-section { padding: 80px 20px; text-align: center; background: white; }
+        .pricing-section h2 { font-size: 36px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+        .pricing-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1100px; margin: 40px auto 0; }
+        
+        .price-card { background: var(--light); border-radius: 24px; padding: 40px 30px; flex: 1; min-width: 300px; max-width: 350px; text-align: left; border: 1px solid #eaeaea; transition: 0.3s; position: relative; }
+        .price-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .price-card h3 { font-size: 22px; margin-top: 0; }
+        .price-card .price { font-size: 42px; font-weight: 900; margin: 15px 0; color: var(--dark); letter-spacing: -2px;}
+        .price-card .price span { font-size: 16px; font-weight: 600; color: var(--text-muted); letter-spacing: 0;}
+        .price-card ul { list-style: none; padding: 0; margin-top: 25px; }
+        .price-card ul li { margin-bottom: 12px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--text-muted);}
+        .price-card ul li::before { content: '✓'; color: var(--success); font-weight: bold; font-size: 16px; }
+        .price-card .btn-plan { display: block; text-align: center; background: var(--dark); color: white; padding: 15px; border-radius: 12px; font-weight: bold; text-decoration: none; margin-top: 30px; transition: 0.2s;}
+        
+        .price-card.popular { border: 2px solid var(--primary); background: white; transform: scale(1.05); box-shadow: 0 20px 40px rgba(0,122,255,0.15); }
+        .price-card.popular:hover { transform: scale(1.05) translateY(-5px); }
+        .price-card.popular .btn-plan { background: var(--primary); }
+        .badge-popular { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; font-size: 12px; font-weight: bold; padding: 5px 15px; border-radius: 20px; }
+
+        .price-card.ultimate { background: linear-gradient(135deg, #1C1C1E 0%, #000000 100%); color: white; }
+        .price-card.ultimate h3, .price-card.ultimate .price { color: white; }
+        .price-card.ultimate ul li { color: #aaa; }
+        .price-card.ultimate .btn-plan { background: white; color: black; }
 
         /* Call to Action */
         .cta { text-align: center; padding: 80px 20px; background: var(--primary); color: white; }
@@ -73,138 +60,135 @@
         .btn { background: white; color: var(--primary); text-decoration: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: 0.3s; display: inline-block; }
         .btn:hover { transform: scale(1.05); }
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            .section { flex-direction: column !important; text-align: center; padding: 50px 20px; }
-            .section-text ul { text-align: left; }
-        }
+        @media (max-width: 768px) { .section { flex-direction: column !important; text-align: center; padding: 50px 20px; } .section-text ul { text-align: left; } .price-card.popular { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <div class="badge">Versi Terbaru v7.7</div>
+        <div class="badge">Versi Terbaru v7.5 - Enterprise Ready</div>
         <h1>Ubah HP Anda Menjadi<br>Mesin Koreksi LJK Terpintar.</h1>
-        <p>Tinggalkan alat pemindai mahal. Koreksi ujian dalam hitungan detik, cetak LJK sendiri, dan deteksi kecurangan langsung dari genggaman Anda.</p>
-        <img src="1000456306.png" alt="Scanner View">
+        <p>Tinggalkan alat pemindai mahal. Koreksi ujian dalam hitungan detik, cetak LJK ber-Watermark, dan bongkar kecurangan siswa dari genggaman Anda.</p>
     </div>
 
     <div class="section">
         <div class="section-text">
             <h2>Pemindaian Sekilat Kedipan Mata</h2>
-            <p>Didukung oleh mesin pembaca optik (OpenCV) tingkat tinggi yang kebal terhadap kemiringan. Dapatkan rincian jawaban (Benar, Salah, Ganda, Kosong) detik itu juga, lengkap dengan dukungan suara AI otomatis (TTS)!</p>
+            <p>Didukung oleh mesin pembaca optik (OpenCV) tingkat tinggi yang kebal terhadap kemiringan. Dapatkan rincian jawaban detik itu juga, lengkap dengan dukungan suara AI otomatis (TTS)!</p>
             <ul>
-                <li><strong>Auto-Scan & Lensa Cerdas:</strong> Mendukung kamera Ultra-Wide dan Macro.</li>
+                <li><strong>Auto-Scan Cerdas:</strong> Kecepatan tinggi mendeteksi 60 soal sekaligus.</li>
                 <li><strong>Manual Crop (Anti-Gagal):</strong> Tersedia mode geser 4 titik sudut secara manual jika kertas LJK terlipat atau kamera sulit fokus.</li>
-                <li><strong>Indikator KKM:</strong> Warna skor berubah otomatis (Hijau/Merah) menyesuaikan KKM.</li>
                 <li><strong>Confetti Effect:</strong> Ledakan <em>confetti</em> 🎉 meriah di layar khusus untuk siswa bernilai sempurna (100)!</li>
             </ul>
         </div>
         <div class="section-img">
-            <img src="1000456308.png" alt="Rincian Tes">
+            <div style="background:#ddd; width:100%; height:250px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#888;">[ Gambar UI Scan / Confetti ]</div>
         </div>
     </div>
 
     <div class="section reverse">
         <div class="section-text">
-            <h2>Rekapitulasi Nilai Otomatis & Rapi</h2>
-            <p>Berhenti merekap nilai ke buku. Semua data siswa beserta skor akhirnya tersusun dalam satu tabel interaktif yang bisa diurutkan (Ranking) secara instan.</p>
+            <h2>Analisis Butir Soal Layaknya Pakar</h2>
+            <p>Tingkatkan kualitas ujian Anda! Aplikasi ini membedah setiap soal secara mendalam dan menyajikannya lewat visualisasi tabel pintar.</p>
             <ul>
-                <li><strong>Koreksi Manual:</strong> Cukup klik nama siswa di tabel untuk memperbaiki coretan kotor yang salah terbaca.</li>
-                <li><strong>Aksi Instan:</strong> Kirim rincian Rapor Individu PDF & pesan hasil nilai langsung via WhatsApp.</li>
-                <li><strong>Ekspor Massal:</strong> Download rekap kelas ke format Excel (.xlsx) dengan 1 klik.</li>
+                <li><strong>Tingkat Kesukaran & Validitas:</strong> Otomatis menghitung rasio soal Sukar, Sedang, Mudah, dan Daya Pembedanya.</li>
+                <li><strong>Pelacak Distraktor (Jebakan):</strong> Fitur Ultimate! Mesin akan memberitahu Anda opsi jawaban salah mana yang paling banyak mengecoh siswa (Misal: 15 Anak salah menebak C).</li>
             </ul>
         </div>
         <div class="section-img">
-            <img src="1000456309.png" alt="Daftar Nilai Siswa">
+            <div style="background:#ddd; width:100%; height:250px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#888;">[ Gambar Tabel Analisis Distraktor ]</div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-text">
-            <h2>Analisis Butir Soal Layaknya Pakar</h2>
-            <p>Tingkatkan kualitas ujian Anda! Aplikasi ini membedah setiap soal secara mendalam dan menyajikannya lewat visualisasi grafik yang memanjakan mata.</p>
-            <ul>
-                <li><strong>Donat Chart Ketuntasan:</strong> Visualisasi elegan siswa Lulus vs Remedial.</li>
-                <li><strong>Validitas Soal Akurat:</strong> Mendeteksi otomatis <em>Tingkat Kesukaran</em> (Sukar/Sedang/Mudah).</li>
-                <li><strong>Evaluasi Daya Pembeda:</strong> Memberi rekomendasi apakah soal tersebut <em>Baik</em>, <em>Cukup</em>, atau butuh <em>Revisi</em>.</li>
-            </ul>
-        </div>
-        <div class="section-img">
-            <img src="1000456310.png" alt="Analisis Statistik">
-        </div>
-    </div>
-
-    <div class="section reverse">
         <div class="section-text">
             <h2 style="color: #FF3B30;">🕵️‍♂️ Radar Investigasi Kecurangan</h2>
             <p>Fitur revolusioner untuk menjaga integritas kelas. Algoritma kami bekerja layaknya detektif untuk membongkar indikasi contek-menyontek massal.</p>
             <ul>
-                <li>Sistem akan mencari pasangan siswa yang memiliki <strong>minimal 4 jawaban SALAH yang polanya persis sama</strong>.</li>
-                <li>Mengurutkan tersangka secara otomatis dari tingkat kemiripan/kecurigaan tertinggi.</li>
-                <li>Mendeteksi kejanggalan yang mustahil dilihat oleh mata telanjang guru.</li>
+                <li><strong>Deteksi Identik:</strong> Sistem mencari pasangan siswa yang memiliki pola jawaban SALAH yang persis sama.</li>
+                <li><strong>Custom Sensitivitas:</strong> Atur sendiri batas kecurigaan Anda (Mulai dari kemiripan 2 hingga 20 soal salah).</li>
+                <li>Mendeteksi kejanggalan yang mustahil dilihat oleh mata telanjang guru saat mengoreksi manual.</li>
             </ul>
         </div>
         <div class="section-img">
-            <img src="1000456311.png" alt="Radar Nyontek">
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-text">
-            <h2>Personalisasi Identitas LJK Sekolahmu</h2>
-            <p>Atur desain LJK sesuai dengan kebutuhan instansi. Anda memegang kendali penuh atas teks dan identitas yang akan terpampang di lembar ujian.</p>
-            <ul>
-                <li>Bebas mengisi 4 baris teks (Nama Ujian, Tahun Ajaran, Instansi, dan Alamat).</li>
-                <li>Fitur <em>Auto-Trim</em>: Teks super panjang akan otomatis dipotong elegan dengan titik-titik tanpa merusak <em>layout</em>.</li>
-                <li>Unggah dan pasang Logo Sekolah Anda langsung dari galeri.</li>
-            </ul>
-        </div>
-        <div class="section-img">
-            <img src="1000456316.png" alt="Pengaturan Kop LJK">
+            <div style="background:#ddd; width:100%; height:250px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#888;">[ Gambar Radar Nyontek Custom ]</div>
         </div>
     </div>
 
     <div class="section reverse">
         <div class="section-text">
-            <h2>Template LJK Standar Enterprise</h2>
-            <p>Berhenti berlangganan LJK pabrikan! Kami men-<em>generate</em> file PDF LJK siap cetak dengan ukuran statis yang sangat kokoh dan anti-geser.</p>
+            <h2>Cetak LJK Anti-Bajakan</h2>
+            <p>Berhenti berlangganan LJK pabrikan! Kami men-<em>generate</em> file PDF LJK siap cetak dengan desain skala milimeter yang bisa dipersonalisasi.</p>
             <ul>
-                <li>Terkunci di format ukuran Kertas A4 (Landscape).</li>
-                <li>Tersedia area Jawaban Uraian (Esai) dengan garis-garis yang rapi dan konsisten.</li>
-                <li>Garis desain berskala presisi milimeter untuk menjamin kelancaran mesin pemindai.</li>
+                <li>Bebas mengisi Kop teks (Nama Ujian, Sekolah, dll) dan Logo Sekolah.</li>
+                <li><strong>Watermark Anti-Copy:</strong> Fitur Ultimate! Logo sekolah Anda akan dijadikan bayangan transparan (watermark) raksasa di tengah kertas untuk mencegah penggandaan LJK oleh pihak luar.</li>
             </ul>
         </div>
         <div class="section-img">
-            <img src="1000456321.png" alt="Template Cetak LJK">
+            <div style="background:#ddd; width:100%; height:250px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#888;">[ Gambar Kertas LJK Watermark ]</div>
         </div>
     </div>
 
-    <div class="grid-features">
-        <div class="card">
-            <img src="1000456312.png" alt="Sistem Penilaian" style="max-width: 100%; border-radius: 12px; margin-bottom: 15px;">
-            <h3>Sistem Penilaian Canggih</h3>
-            <p>Bebas menentukan Skor Mentah, Persentase Standar, atau model Try Out UTBK (+4, -1, 0). Dilengkapi fitur anulir soal (X) dan Bonus (*).</p>
-        </div>
-        <div class="card">
-            <img src="1000456317.png" alt="Data Siswa Server" style="max-width: 100%; border-radius: 12px; margin-bottom: 15px;">
-            <h3>Sinkronisasi Supabase</h3>
-            <p>Bisa menarik ribuan data nama siswa langsung dari server Cloud (Supabase), Upload dari file Excel, atau input manual per kelas.</p>
-        </div>
-        <div class="card">
-            <img src="1000456307.png" alt="Buku Panduan" style="max-width: 100%; border-radius: 12px; margin-bottom: 15px;">
-            <h3>Dark Mode & Offline Ready</h3>
-            <p>Tersedia Mode Gelap premium yang ramah mata. Aplikasi bisa di-Install (PWA) untuk dijalankan dengan kecepatan super tanpa kuota internet!</p>
+    <div class="pricing-section">
+        <h2>Pilih Paket Sesuai Kebutuhanmu</h2>
+        <p style="color: var(--text-muted); font-size: 18px;">Solusi cerdas dari Guru Individu hingga Skala Yayasan Pendidikan.</p>
+        
+        <div class="pricing-grid">
+            
+            <div class="price-card">
+                <h3>Paket Dasar</h3>
+                <div class="price">Gratis <span>/selamanya</span></div>
+                <p style="font-size: 14px; color: var(--text-muted);">Cocok untuk uji coba dan tes ulangan harian kecil.</p>
+                <ul>
+                    <li>Maks. 40 Kunci Soal</li>
+                    <li>Maks. 40 Siswa per Kelas</li>
+                    <li>Sistem Penilaian Mentah (Benar/Salah)</li>
+                    <li>Cetak LJK Standar</li>
+                    <li>Input Siswa Manual</li>
+                </ul>
+                <a href="https://gus-ljk.github.io/app" class="btn-plan">Mulai Gratis</a>
+            </div>
+
+            <div class="price-card popular">
+                <div class="badge-popular">PALING DIMINATI</div>
+                <h3 style="color: var(--primary);">Paket Pro</h3>
+                <div class="price">Rp 29rb <span>/bulan</span></div>
+                <p style="font-size: 14px; color: var(--text-muted);">Cocok untuk Guru Produktif. Bayar Tahunan: Rp 290rb.</p>
+                <ul>
+                    <li>Maks. 60 Kunci Soal</li>
+                    <li><strong>Scan Siswa Tanpa Batas</strong></li>
+                    <li>Suara AI Pembaca Nilai</li>
+                    <li>Efek Confetti (Siswa Nilai 100)</li>
+                    <li>Skor Persentase & Sistem UTBK</li>
+                    <li>Import Siswa dari Excel</li>
+                    <li>Radar Nyontek Standar</li>
+                </ul>
+                <a href="https://gus-ljk.github.io/app" class="btn-plan">Berlangganan Pro</a>
+            </div>
+
+            <div class="price-card ultimate">
+                <h3>Paket Ultimate</h3>
+                <div class="price">Rp 149rb <span>/bulan</span></div>
+                <p style="font-size: 14px; color: #aaa;">Sistem lengkap untuk Operator Sekolah. Bayar Tahunan: Rp 1,4 Jt.</p>
+                <ul>
+                    <li style="color: white;">Semua Fitur Pro Termasuk</li>
+                    <li style="color: white;">Sinkronisasi Server (Supabase)</li>
+                    <li style="color: white;">Custom Bobot Nilai Per Soal</li>
+                    <li style="color: white;">Cetak LJK Ber-Watermark</li>
+                    <li style="color: white;">Analisis Distraktor (Jebakan)</li>
+                    <li style="color: white;">Custom Radar Nyontek (2-20)</li>
+                </ul>
+                <a href="https://gus-ljk.github.io/app" class="btn-plan">Hubungi Tim Kami</a>
+            </div>
+
         </div>
     </div>
 
     <div class="cta">
         <h2>Siap Mengubah Cara Anda Bekerja?</h2>
         <p>Bergabunglah dengan pengajar modern. Hemat 90% waktu Anda untuk mengoreksi ujian.</p>
-                <a href="https://scanner-hk.vercel.app" target="_blank" class="btn">Gunakan Aplikasi Sekarang (Gratis)</a>
-
+        <a href="https://gus-ljk.github.io/app" target="_blank" class="btn">Gunakan Aplikasi Sekarang (Gratis)</a>
     </div>
 
 </body>
 </html>
-
